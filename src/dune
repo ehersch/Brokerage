@@ -1,4 +1,4 @@
 (library
  (name stocks)
  (public_name Stocks)
- (libraries yojson ANSITerminal))
+ (libraries cohttp.lwt.unix cohttp-async yojson))
