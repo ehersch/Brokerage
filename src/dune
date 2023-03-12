@@ -1,0 +1,4 @@
+(library
+ (name stocks)
+ (public_name Stocks)
+ (libraries yojson ANSITerminal))
