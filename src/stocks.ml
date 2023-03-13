@@ -1,1 +1,3 @@
-open Cohttp_lwt_unix
+open Cohttp
+open Yojson
+open Lwt

@@ -1,4 +1,4 @@
 (library
  (name stocks)
  (public_name Stocks)
- (libraries cohttp.lwt.unix cohttp-async yojson))
+ (libraries cohttp lwt yojson))
