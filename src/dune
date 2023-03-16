@@ -1,4 +1,14 @@
 (library
  (name stocks)
  (public_name Stocks)
- (libraries cohttp-lwt-unix yojson))
+ (libraries
+  cohttp-lwt-unix
+  cohttp-top
+  cohttp-lwt-jsoo
+  cohttp-async
+  cohttp-lwt
+  cohttp
+  yojson
+  tls-lwt)
+ (preprocess
+  (pps lwt_ppx)))
