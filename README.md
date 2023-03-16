@@ -5,7 +5,7 @@ NetID and names: Ethan Hersch esh87, Jerry Chen jwc279, Aarav Khanna ak2246, Moh
 
 Install opam dependencies (should take a few minutes):
 ```
-opam install ppx_deriving tls-lwt cohttp cohttp-async cohttp-lwtcohttp-lwt-unix cohttp-lwt-jsoo cohttp-top
+opam install ppx_deriving tls-lwt cohttp cohttp-async cohttp-lwt cohttp-lwt-unix cohttp-lwt-jsoo cohttp-top lwt_ppx
 ```
 
 For test suite & UI
