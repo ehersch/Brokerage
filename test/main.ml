@@ -1,6 +1,10 @@
 open Stocks
+open OUnit2
 
-let () =
-  let ticker_price = Lwt_main.run (get_ticker_price "AAPL") in
-  print_endline
-    ("\nStock price for AAPL yesterday is\n" ^ string_of_float ticker_price)
+let stock_info_tests = 
+
+let suite =
+  "test suite for Jame-Street"
+  >::: List.flatten []
+
+let _ = run_test_tt_main suite
