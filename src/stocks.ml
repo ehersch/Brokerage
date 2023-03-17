@@ -61,4 +61,4 @@ let get_ticker_price ticker =
       |> to_float
     in
     Lwt.return view_info
-  with Yojson.Basic.Util.Type_error (msg, _) -> raise (NoSuchStock ticker)
+  with exn -> raise (NoSuchStock ("No stock exists with name " ^ ticker))
