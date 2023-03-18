@@ -1,0 +1,24 @@
+group:
+  - name: Ethan Hersch
+    netid: esh87
+  - name: Mohammad Islam
+    netid: mai54
+  - name: Aarav Khanna
+    netid: ak2246
+  - name: Jerry Chen
+    netid: jwc279
+
+pm:
+  name:
+  netid:
+
+publish: true
+
+title: "JAME Street Brokerage"
+
+gir-repo: https://github.coecis.cornell.edu/esh87/Jame-Street.git
+
+demo-video-url:
+
+desc: >
+  Our project
