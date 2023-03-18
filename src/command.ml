@@ -4,11 +4,7 @@ type command =
   | Dep of string list
   | Withdraw of string list
   | View of string list
-<<<<<<< HEAD
-  | Help of string list
-=======
   | Help
->>>>>>> refs/remotes/origin/main
   | Quit
 
 exception Empty
@@ -52,14 +48,8 @@ let parse str =
   match actual_words with
   | [ "-quit" ] -> Quit
   | "-quit" :: t -> if only_spaces t then Quit else raise Invalid
-<<<<<<< HEAD
-  | [ "-bal" ] | [ "-portfolio" ] | [ "-dep" ] | [ "-withdraw" ] | [ "-view" ]
-    -> raise Invalid
-  | 
-=======
   | [ "-help" ] -> Help
   | "-help" :: t -> if only_spaces t then Help else raise Invalid
   | _ -> raise Invalid
   | _ :: t -> if only_spaces words then raise Empty else raise Invalid
   | [] -> raise Empty
->>>>>>> refs/remotes/origin/main
