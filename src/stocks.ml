@@ -44,18 +44,20 @@ exception NoSuchStock of string
       the closing price from yesterday.
     - Raise: exception [NoSuchStock] if ticker symbol does not exist. *)
 let get_ticker_price ticker =
-  let endpoint =
-    "/v2/aggs/ticker/" ^ ticker ^ "/range/1/day/" ^ get_date ^ "/" ^ get_date
-    ^ "?adjusted=true&sort=asc&limit=120"
-  and query_params = [ ("apiKey", api_key) ] in
-  let uri =
-    Uri.with_query' (Uri.of_string (base_url ^ endpoint)) query_params
-  in
-  let%lwt response, body = Client.get uri in
-  let%lwt body_str = Cohttp_lwt.Body.to_string body in
-  let body_json = Yojson.Basic.from_string body_str in
-  let view_info =
-    body_json |> member "results" |> to_list |> List.hd |> member "c"
-    |> to_float
-  in
-  Lwt.return view_info
+  try
+    let endpoint =
+      "/v2/aggs/ticker/" ^ ticker ^ "/range/1/day/" ^ get_date ^ "/" ^ get_date
+      ^ "?adjusted=true&sort=asc&limit=120"
+    and query_params = [ ("apiKey", api_key) ] in
+    let uri =
+      Uri.with_query' (Uri.of_string (base_url ^ endpoint)) query_params
+    in
+    let%lwt response, body = Client.get uri in
+    let%lwt body_str = Cohttp_lwt.Body.to_string body in
+    let body_json = Yojson.Basic.from_string body_str in
+    let view_info =
+      body_json |> member "results" |> to_list |> List.hd |> member "c"
+      |> to_float
+    in
+    Lwt.return view_info
+  with exc -> raise (NoSuchStock ticker)
