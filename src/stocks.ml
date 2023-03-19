@@ -8,7 +8,7 @@ open Unix
 
 let base_url = "https://api.polygon.io"
 
-(*Personal key for our team. Max calls per min = 40*)
+(*Personal key for our team. Max calls per min = 5*)
 let api_key = "jn_NAmtAD16hk6azpunzVK1TEvKiu5vy"
 
 (**Gets the uppercase ticker symbol of the stock the user wants info on.*)
@@ -22,8 +22,8 @@ let ticker =
    years.*)
 let proper_year year = string_of_int (year + 1900)
 
-(**If the date field [date] has only one didgit, this method places a zero
-   before that digit.*)
+(**If the date field [date] has only one digit, this method places a zero before
+   that digit.*)
 let proper_date date =
   if date < 10 then "0" ^ string_of_int date else string_of_int date
 
@@ -35,7 +35,7 @@ let get_date =
   ^ "-"
   ^ proper_date (t.tm_mday - 1)
 
-(*[get_ticker_price] grabs symbol [ticker] and retrieves the pricing from
+(*[get_ticker_price] grabs symbol [ticker] and retrieves the closing price from
   yesterday*)
 let get_ticker_price ticker =
   let endpoint =
