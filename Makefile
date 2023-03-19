@@ -14,3 +14,9 @@ test:
 
 play:
 	OCAMLRUNPARAM=b dune exec ui/main.exe
+
+doc:
+	dune build @doc
+
+opendoc: doc
+	@bash opendoc.sh
