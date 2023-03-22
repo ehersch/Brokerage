@@ -1,4 +1,7 @@
+open Backend
 open Stocks
+open Command
+open Account
 
 (** new_user creates a new user within the UI and prints out an empty portfolio,
     giving the user the option to view stocks*)

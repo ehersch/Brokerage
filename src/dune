@@ -1,6 +1,6 @@
 (library
- (name stocks)
- (public_name Stocks)
+ (name backend)
+ (public_name Backend)
  (libraries
   cohttp-lwt-unix
   cohttp-top

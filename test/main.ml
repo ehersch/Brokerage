@@ -1,4 +1,7 @@
+open Backend
 open Stocks
+open Account
+open Command
 open OUnit2
 
 (* Parse tests for valid user input commands*)
