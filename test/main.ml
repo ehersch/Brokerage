@@ -14,7 +14,7 @@ let parse_excE_test (name : string) (input_str : string) : test =
 let parse_excI_test (name : string) (input_str : string) : test =
   name >:: fun _ -> assert_raises Invalid (fun () -> input_str)
 
-let command_tests =
+let parse_tests =
   [
     parse_test "Testing a valid single parameter command" "  -bal  " Bal;
     parse_test "Testing a valid command that uses multiple parameters"
@@ -30,3 +30,6 @@ let command_tests =
     parse_excI_test "Testing a string without a first word as a valid command"
       "let's -dep 500";
   ]
+
+let suite = "test suite for A2" >::: List.flatten [ parse_tests ]
+let _ = run_test_tt_main suite
