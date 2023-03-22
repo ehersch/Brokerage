@@ -2,7 +2,8 @@ exception Broke
 (** Raised when attempting to withdraw more money than available.*)
 
 exception OverMemory
-(** Raised when *)
+(** Raised when a user attempts to deposit money into an account resulting in an
+    integer the brokerage cannot handle: 1073741823 which leads to overmemory *)
 
 type stock = {
   ticker : string;
@@ -13,7 +14,7 @@ type stock = {
 type account = {
   stock_balance : float;
   cash_balance : float;
-  portfolio : stock * float * float list;
+  portfolio : (stock * float * float) list;
 }
 (** Type [account] contains the floats [stock_balance] and [cash_balance] and
     the set-like-list of stocks [portfolio] and how many shares owned. *)
@@ -45,10 +46,10 @@ let withdraw (amt : float) (acc : account) =
 (* Returns: [deposit amt acc] a new account record with an updated cash_balance
    after depositing the specified amount and requires: - [amt]: A non-negative
    float representing the amount to be deposited. - [acc]: A valid account
-   record. - The total account stock_balac cannot be over 1073741823 - Raises:
-   None - Examples: Given an account with cash_balance = 1000.0, depositing
-   200.0 will result in an account with cash_balance = 1200.0. If the deposit
-   amount is 0.0, the function will return an account with the same
+   record. - The total account stock_balance cannot be over 1073741823 - Raises:
+   OverMemory - Examples: Given an account with cash_balance = 1000.0,
+   depositing 200.0 will result in an account with cash_balance = 1200.0. If the
+   deposit amount is 0.0, the function will return an account with the same
    cash_balance. *)
 
 let deposit (amt : float) (acc : account) =
@@ -57,3 +58,21 @@ let deposit (amt : float) (acc : account) =
     cash_balance = acc.cash_balance +. amt;
     stock_balance = acc.stock_balance +. amt;
   }
+
+(** [balance acc] is the cash and stock balance of [acc] in a float array which allows for constant
+    time extraction of balances when parsing -bal in the main UI. 
+    Example: balance {stock_balance = 500.0; cash_balance = 500.0 ; portfolio = []} is 
+    [|"500.0";"500.0"|]*)
+let balance acc =
+  [| string_of_float acc.cash_balance; string_of_float acc.stock_balance |]
+
+(** [portfolio port] is a string list list of each ticker with its associated
+    average price and quantity of shares from account's portfolio. Example:
+    portfolio [(AAPL, 125.0, 3.0); (META, "175.0", 2.0)]
+    is[\["AAPL";"125.0";"3.0"\];\["META";"175.0";"3.0"\]] *)
+let rec portfolio port =
+  match port with
+  | [] -> []
+  | (h, p, q) :: t ->
+      ([ h.ticker ] @ [ string_of_float p ] @ [ string_of_float q ])
+      :: portfolio t
