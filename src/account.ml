@@ -16,7 +16,7 @@ type stock = {
 type account = {
   stock_balance : float;
   cash_balance : float;
-  portfolio : (stock * float * float) list;
+  portfolio : (stock * float) list;
 }
 (** Type [account] contains the floats [stock_balance] and [cash_balance] and
     the set-like-list of stocks [portfolio] and how many shares owned. *)
@@ -69,11 +69,12 @@ let balance acc = string_of_float acc.stock_balance
 
 (** [portfolio port] is a string list list of each ticker with its associated
     average price and quantity of shares from account's portfolio. Example:
-    portfolio [(AAPL, 125.0, 3.0); (META, "175.0", 2.0)]
-    is[\["AAPL";"125.0";"3.0"\];\["META";"175.0";"3.0"\]] *)
+    portfolio
+    [{ticker = AAPL; price = 125.0} 3.0); ({ticker = META; price = 175.0}, 2.0)]
+    is[\["AAPL";"125.0";"3.0"\];\["META";"175.0";"2.0"\]] *)
 let rec portfolio port =
   match port with
   | [] -> []
-  | (h, p, q) :: t ->
-      ([ h.ticker ] @ [ string_of_float p ] @ [ string_of_float q ])
+  | (h, q) :: t ->
+      ([ h.ticker ] @ [ string_of_float h.price ] @ [ string_of_float q ])
       :: portfolio t
