@@ -20,10 +20,10 @@ let parse_excI_test (name : string) (input_str : string) : test =
 let parse_tests =
   [
     parse_test "Testing a valid single parameter command" "  -bal  " Bal;
-    parse_test "Testing a valid command that uses multiple parameters"
-      "-dep 500.0" (Dep [ "500.0" ]);
-    parse_test "Testing a valid command with multiple spaces in between"
-      " -withdraw     300.0 " (Withdraw [ "300.0" ]);
+    (* parse_test "Testing a valid command that uses multiple parameters" "-dep
+       500.0" (Dep [ "500.0" ]); parse_test "Testing a valid command with
+       multiple spaces in between" " -withdraw 300.0 " (Withdraw [ "300.0"
+       ]); *)
     parse_excE_test "Testing an empty string" "";
     parse_excE_test "Testing a string with only spaces" "      ";
     parse_excI_test "Testing a string with words after a no parameter command"

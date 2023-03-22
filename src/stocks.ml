@@ -5,6 +5,12 @@ open Yojson
 open Unit
 open Yojson.Basic.Util
 
+exception NoSuchStock of string
+(** Raised when this ticker symbol does not exist. *)
+
+(** - Returns: [get_ticker_price ticker] grabs the symbol [ticker] and retrieves
+      the closing price from yesterday.
+    - Raise: exception [NoSuchStock] if ticker symbol does not exist. *)
 let base_url = "https://api.polygon.io"
 
 (** Personal key for our team. Max calls per min = 5*)
@@ -37,12 +43,6 @@ let get_date =
   ^ "-"
   ^ proper_date (t.tm_mday - 1)
 
-exception NoSuchStock of string
-(** Raised when this ticker symbol does not exist. *)
-
-(** - Returns: [get_ticker_price ticker] grabs the symbol [ticker] and retrieves
-      the closing price from yesterday.
-    - Raise: exception [NoSuchStock] if ticker symbol does not exist. *)
 let get_ticker_price ticker =
   try
     let endpoint =

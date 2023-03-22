@@ -7,9 +7,12 @@ open Account
     giving the user the option to view stocks*)
 let new_user () =
   print_endline
-    "You currently have no stocks owned with a balance of 0.0. Press 1 to view \n\
-     the stock list"
+    "You currently have no stocks owned with a balance of 0.0. Type -help to \
+     view all our brokerage feature commands"
 
+let invalid_msg () =
+print_endline
+"Please enter in a valid prompt! Type -help to view all commands"
 (** terms lets the user decide on whether or not they agree to the terms and
     conditions in order to keep using our services*)
 let rec terms () =
@@ -110,6 +113,81 @@ let rec age_check ans =
       print_string "> ";
       age_check (read_line ())
 
+let print_strings list_of_lists =
+  List.iter (fun str_list ->
+    List.iter (fun str ->
+      print_endline str
+    ) str_list
+  ) list_of_lists
+;;
+
+let rec prompt_command (curr_acc  : account) : account =
+  ANSITerminal.print_string [ ANSITerminal.red ]
+    "Please enter a command. Type -help to view all valid commands\n";
+  print_string "> ";
+  match parse(read_line()) with
+
+(* 
+  ANSITerminal.print_string [ ANSITerminal.red ]
+    "Please enter a command. Type -help to view all valid commands\n";
+  print_string "> "; *)
+
+
+
+  | Portfolio -> 
+    ANSITerminal.print_string [ ANSITerminal.red ]   
+    "Here are all the stocks you own, their price, and your shares: \n";
+    print_strings(portfolio curr_acc.portfolio);
+    prompt_command(curr_acc)
+
+  | Dep amt -> ANSITerminal.print_string [ ANSITerminal.red ]   
+    ("Successfully deposited : " ^ string_of_float amt ^ "\n");
+     let new_acc = deposit amt curr_acc in prompt_command(new_acc) 
+
+  | Withdraw amt -> 
+    match withdraw amt curr_acc with 
+    | new_acc -> 
+      ANSITerminal.print_string [ ANSITerminal.red ]   
+    ("Successfully withdrew " ^ string_of_float amt 
+    ^ ". Check your bank for your deposit.\n");
+      prompt_command(new_acc) 
+    | _ -> ANSITerminal.print_string [ ANSITerminal.red ]   
+    "Invalid withdraw amount. Try another command\n";
+    prompt_command(curr_acc) 
+
+  | Bal -> 
+    ANSITerminal.print_string [ ANSITerminal.red ]   
+    ("Your current balance (cash and stock worth combined) is: " 
+    ^ (balance curr_acc) ^ "\n");
+    prompt_command(curr_acc) 
+
+  | View ticker -> 
+    match get_ticker_price ticker with 
+    | NoSuchStock inv_name -> 
+      ANSITerminal.print_string [ ANSITerminal.red ]   
+      ("There is no ticker named " ^ String.uppercase_ascii inv_name) ^ "\n";
+      prompt_command(curr_acc) 
+    | price ->     
+      ANSITerminal.print_string [ ANSITerminal.red ]   
+      ("\nThe closing stock price for "
+      ^ String.uppercase_ascii ticker
+      ^ " yesterday was\n"
+      ^ string_of_float price) ^ "\n";
+      prompt_command(curr_acc)
+
+  | Help -> ANSITerminal.print_string [ ANSITerminal.red ]   
+    "Available commands\n-bal\n-portfolio\n-dep [amt]\n-withdraw [amt]
+    \n-view [ticker]\n-help\n-quit\n";
+    prompt_command(curr_acc)
+
+  | Quit -> ANSITerminal.print_string [ ANSITerminal.red ]   
+    "Terminating brokerage simulation. Have a wonderful day! 
+    If you want to run this program again, please type [make play]\n";
+
+  | Invalid -> invalid_msg();
+    prompt_command(curr_acc)
+
+
 (** Starts the user interface for Jame Street*)
 let main () =
   ANSITerminal.print_string [ ANSITerminal.red ] "\n\nWelcome to Jame Street.\n";
@@ -117,12 +195,20 @@ let main () =
     "We are the fastest growing trading firm in the industry using\n\
      innovative technology with fast user services.";
   print_endline "";
+
   ANSITerminal.print_string [ ANSITerminal.red ]
     "To begin trading, please indicate if you are atleast eighteen years old. \
      Please enter 'yes' or 'no' ";
   print_string "> ";
   match read_line () with
-  | h -> age_check h
+  | h -> (
+      age_check h)
 
+  let fresh_acc_example_preloaded_stocks = {
+    stock_balance = 0.;
+    cash_balance = 0.;
+    portfolio = [(AAPL, 125.0, 3.0); (META, "175.0", 2.0)];
+  }
+  prompt_command(fresh_acc_example_preloaded_stocks)
 (* Execute the game engine. *)
 let () = main ()

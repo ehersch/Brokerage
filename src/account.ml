@@ -1,3 +1,5 @@
+open Stocks
+
 exception Broke
 (** Raised when attempting to withdraw more money than available.*)
 
@@ -58,3 +60,20 @@ let deposit (amt : float) (acc : account) =
     cash_balance = acc.cash_balance +. amt;
     stock_balance = acc.stock_balance +. amt;
   }
+
+(** [balance acc] is the cash and stock balance of [acc] in a float array which allows for constant
+    time extraction of balances when parsing -bal in the main UI. 
+    Example: balance {stock_balance = 500.0; cash_balance = 500.0 ; portfolio = []} is 
+    "500.0"*)
+let balance acc = string_of_float acc.stock_balance
+
+(** [portfolio port] is a string list list of each ticker with its associated
+    average price and quantity of shares from account's portfolio. Example:
+    portfolio [(AAPL, 125.0, 3.0); (META, "175.0", 2.0)]
+    is[\["AAPL";"125.0";"3.0"\];\["META";"175.0";"3.0"\]] *)
+let rec portfolio port =
+  match port with
+  | [] -> []
+  | (h, p, q) :: t ->
+      ([ h.ticker ] @ [ string_of_float p ] @ [ string_of_float q ])
+      :: portfolio t
