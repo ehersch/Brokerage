@@ -20,7 +20,7 @@ title: "JAME Street Brokerage"
 # OK if this is a Cornell Github link, but public gallery viewers won't be able to see it.
 git-repo: "https://github.coecis.cornell.edu/esh87/Jame-Street.git"
 # If you have no demo screencast, replace the url string with an empty string ""
-demo-video-url:
+demo-video-url: ""
 # Write a short, attention-grabbing description of your project.
 desc: >
   Our project is a simulated brokerage where a user can deposit money into their account, access 
