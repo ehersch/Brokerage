@@ -16,9 +16,9 @@ make play
 ```
 
 To view stock prices based on their ticker names
-'''
+```
 dune build
 make view_stock
-'''
+```
 
 Final project for CS3110
