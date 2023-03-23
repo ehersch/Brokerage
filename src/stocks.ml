@@ -19,7 +19,7 @@ let api_key = "jn_NAmtAD16hk6azpunzVK1TEvKiu5vy"
 (** Gets the uppercase ticker symbol of the stock the user wants info on.*)
 let ticker =
   String.uppercase_ascii
-    (print_endline "Enter the ticker symbol of a stock: \n";
+    (print_endline "\nEnter the ticker symbol of a stock: \n";
      print_string "> ";
      read_line ())
 

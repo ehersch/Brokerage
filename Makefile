@@ -15,6 +15,9 @@ test:
 play:
 	OCAMLRUNPARAM=b dune exec ui/main.exe
 
+view_stock:
+	OCAMLRUNPARAM=b dune exec operate/main.exe
+
 doc:
 	dune build @doc
 
