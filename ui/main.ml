@@ -48,7 +48,7 @@ let rec prompt_command (curr_acc  : account) =
       \n-quit\n";
       prompt_command(curr_acc)
 
-    | Quit -> ANSITerminal.print_string [ ANSITerminal.cyan ]   
+    | Quit -> ANSITerminal.print_string [ ANSITerminal.green ]   
       "Terminating brokerage simulation. Have a wonderful day! 
       If you want to run this program again, please type [make play]\n";
 
