@@ -15,31 +15,31 @@ let invalid_msg () =
       conditions in order to keep using our services*)
 let rec prompt_command (curr_acc  : account) =
   ANSITerminal.print_string [ ANSITerminal.red ]
-    "Please enter a command. Type -help to view all valid commands\n";
+    "\nPlease enter a command. Type -help to view all valid commands\n";
   print_string "> ";
   try
     match parse(read_line()) with
 
     | Portfolio -> 
-      ANSITerminal.print_string [ ANSITerminal.red ]   
+      ANSITerminal.print_string [ ANSITerminal.yellow ]   
       "Here are all the stocks you own, their price, and your shares: \n";
       print_tuple_list(portfolio curr_acc.portfolio);
       prompt_command(curr_acc)
 
-    | Dep amt -> ANSITerminal.print_string [ ANSITerminal.red ]   
+    | Dep amt -> ANSITerminal.print_string [ ANSITerminal.green ]   
       ("Successfully deposited : " ^ string_of_float amt ^ "\n");
       let new_acc = deposit amt curr_acc in prompt_command(new_acc) 
 
     | Bal -> 
-      ANSITerminal.print_string [ ANSITerminal.red ]   
+      ANSITerminal.print_string [ ANSITerminal.cyan ]   
       ("Your current balance (cash and stock worth combined) is: " 
       ^ (string_of_float curr_acc.stock_balance) ^ "\n");
       prompt_command(curr_acc) 
       
 
     (*Removed \n-view [ticker] feature from UI. Run separately in ./operate *)
-    | Help -> ANSITerminal.print_string [ ANSITerminal.red ]   
-      "Available commands
+    | Help -> ANSITerminal.print_string [ ANSITerminal.green ]   
+      "\nAvailable commands
       \n-bal
       \n-portfolio
       \n-dep [amt]
@@ -48,21 +48,21 @@ let rec prompt_command (curr_acc  : account) =
       \n-quit\n";
       prompt_command(curr_acc)
 
-    | Quit -> ANSITerminal.print_string [ ANSITerminal.red ]   
+    | Quit -> ANSITerminal.print_string [ ANSITerminal.cyan ]   
       "Terminating brokerage simulation. Have a wonderful day! 
       If you want to run this program again, please type [make play]\n";
 
     | Withdraw amt -> 
       try
-      ANSITerminal.print_string [ ANSITerminal.red ]   
-      ("Withdrawing $" ^ string_of_float amt ^ "from your account. 
+      ANSITerminal.print_string [ ANSITerminal.yellow ]   
+      ("Withdrawing $" ^ string_of_float amt ^ "from your account... 
       Type -bal to see new balance\n");
         let new_acc = withdraw amt curr_acc in
         prompt_command(new_acc)
       with |
       Broke -> 
-        ANSITerminal.print_string [ ANSITerminal.red ]   
-      ("Withdrawing $" ^ string_of_float amt ^ " is more than is in your account. 
+        ANSITerminal.print_string [ ANSITerminal.magenta ]   
+      ("$" ^ string_of_float amt ^ " is more than is in your account. 
       Try again with a valid withdrawal."); 
       prompt_command(curr_acc)
 
