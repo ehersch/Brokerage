@@ -5,11 +5,12 @@ opam install ppx_deriving tls-lwt cohttp cohttp-async cohttp-lwt cohttp-lwt-unix
 
 To use operate and try out the UI
 ```
-dune build exec ./main.exe 
+dune build
+make play
 ```
 
-To run operate
+To view stock prices based on their ticker names
 '''
-cd operate
-dune exec ./main.exe
+dune build
+make view_stock
 '''
