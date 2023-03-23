@@ -9,7 +9,7 @@ dune build
 make play
 ```
 
-To view stock prices based on their ticker names
+To view stock prices based on their ticker names (API limited to 5 calls per minute so don't try too many times too fast)
 '''
 dune build
 make view_stock
