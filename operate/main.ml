@@ -1,7 +1,7 @@
 open Backend
 open Stocks
 
-let rec view_ticker () =
+let () =
   try
     let ticker_price = Lwt_main.run (get_ticker_price ticker) in
     print_endline "\nRemember, the API only has 5 calls per minute.\n";
