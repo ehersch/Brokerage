@@ -1,4 +1,4 @@
-Install opam dependencies (should take a few minutes):
+Install opam dependencies (should take a few minutes and needs some space on device):
 ```
 opam install ppx_deriving tls-lwt cohttp cohttp-async cohttp-lwt cohttp-lwt-unix cohttp-lwt-jsoo cohttp-top lwt_ppx
 ```
@@ -9,7 +9,7 @@ dune build
 make play
 ```
 
-To view stock prices based on their ticker names (API limited to 5 calls per minute so don't try too many times too fast)
+To view stock prices based on their ticker names
 '''
 dune build
 make view_stock
