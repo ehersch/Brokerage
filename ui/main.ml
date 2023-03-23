@@ -84,7 +84,9 @@ let rec prompt_command (curr_acc  : account) =
     with |
      _ -> invalid_msg();prompt_command(curr_acc) *)
 
-  with | Invalid -> invalid_msg(); prompt_command(curr_acc)
+  with 
+  | Invalid -> invalid_msg(); prompt_command(curr_acc)
+  | Empty -> invalid_msg(); prompt_command(curr_acc)
 
 
 let aapl_stock = {ticker = "AAPL"; price = 135.0}
