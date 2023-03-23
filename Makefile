@@ -23,3 +23,6 @@ doc:
 
 opendoc: doc
 	@bash opendoc.sh
+
+zip:
+	zip -r jamestreet.zip *
