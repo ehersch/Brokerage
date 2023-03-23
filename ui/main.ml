@@ -100,7 +100,8 @@ and prints out an empty portfolio,
     giving the user the option to view stocks*)
 let new_user () =
   print_endline
-    "You're a new user with balance of $0. We've loaded your portfolio with some stock names and their prices
+    "You're a new user with balance of $0. We've loaded your portfolio with 
+    some stock names that you 'own' zero shares of and their prices
     so you can try out our -portfolio feature. Type -help to \
       view all our brokerage feature commands";
   prompt_command(fresh_acc_example_preloaded_stocks)
