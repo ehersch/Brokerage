@@ -1,6 +1,6 @@
 Install opam dependencies (should take a few minutes and needs some space on device):
 ```
-opam install ppx_deriving tls-lwt cohttp cohttp-async cohttp-lwt cohttp-lwt-unix cohttp-lwt-jsoo cohttp-top lwt_ppx
+opam install ppx_deriving tls-lwt cohttp cohttp-async cohttp-lwt cohttp-lwt-unix cohttp-lwt-jsoo cohttp-top lwt_ppx yojson ounit2 ANSITerminal
 ```
 
 To use operate and try out the UI
