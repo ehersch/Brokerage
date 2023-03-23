@@ -34,5 +34,5 @@ let parse_tests =
       "let's -dep 500";
   ]
 
-let suite = "test suite for A2" >::: List.flatten [ parse_tests ]
+let suite = "test suite for Jame Street" >::: List.flatten [ parse_tests ]
 let _ = run_test_tt_main suite
