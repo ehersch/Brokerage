@@ -72,9 +72,7 @@ let balance acc = string_of_float acc.stock_balance
     portfolio
     [{ticker = AAPL; price = 125.0} 3.0); ({ticker = META; price = 175.0}, 2.0)]
     is[\["AAPL";"125.0";"3.0"\];\["META";"175.0";"2.0"\]] *)
-let rec portfolio port =
+let rec portfolio (port : (stock * float) list) =
   match port with
   | [] -> []
-  | (h, q) :: t ->
-      ([ h.ticker ] @ [ string_of_float h.price ] @ [ string_of_float q ])
-      :: portfolio t
+  | (h, q) :: t -> (h.ticker, h.price, q) :: portfolio t

@@ -3,16 +3,18 @@ type command =
   | Portfolio
   | Dep of float
   | Withdraw of float
-  | View of string
-  | Help
+  (* | View of string *)
+  (*Feature disabled temporarily for UI*)
   | Quit
+  | Help
 
-exception Empty
 exception Invalid
+exception Empty
 
 (** [parse str] parses a user's input into a [command]. The first word that is
     not an empty string becomes the command type listed in -help and the rest of
-    the words if any become the phrase. Example:
+    the words if any become the phrase. Raises [Invalid] when input is not in
+      the format of -command [number if required]. Example:
 
     - parse " -dep 500." is [Dep 500.0]]
     - parse "-bal" is [Bal] *)
@@ -26,10 +28,12 @@ let parse str =
   | [ "-bal" ] -> Bal
   | [ "-portfolio" ] -> Portfolio
   | "-dep" :: [ amt ] -> Dep (float_of_string amt)
-  | "-withdraw" :: [ amt ] -> Withdraw (float_of_string amt)
-  | "-view" :: [ ticker ] -> View ticker
+  | "-withdraw" :: [ amt ] ->
+      Withdraw (float_of_string amt)
+      (* | "-view" :: [ ticker ] -> View ticker *)
+      (*Feature disabled temporarily for UI*)
   | [ "-help" ] -> Help
   | [ "-quit" ] -> Quit
   | [ _ ] -> raise Invalid
   | _ :: tl -> raise Invalid
-  | [] -> raise Invalid
+  | [] -> raise Empty

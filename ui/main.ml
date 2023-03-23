@@ -2,12 +2,10 @@ open Backend
 open Stocks
 open Command
 open Account
-let print_strings list_of_lists =
-  List.iter (fun str_list ->
-    List.iter (fun str ->
-      print_endline str
-    ) str_list
-  ) list_of_lists
+let print_tuple_list tuple_list =
+  List.iter (fun (s, f1, f2) ->
+    Printf.printf "%s: %f, %f\n" s f1 f2
+  ) tuple_list
 ;;
 
 let invalid_msg () =
@@ -19,76 +17,93 @@ let rec prompt_command (curr_acc  : account) =
   ANSITerminal.print_string [ ANSITerminal.red ]
     "Please enter a command. Type -help to view all valid commands\n";
   print_string "> ";
-  match parse(read_line()) with
+  try
+    match parse(read_line()) with
 
-  | Portfolio -> 
-    ANSITerminal.print_string [ ANSITerminal.red ]   
-    "Here are all the stocks you own, their price, and your shares: \n";
-    print_strings(portfolio curr_acc.portfolio);
-    prompt_command(curr_acc)
+    | Portfolio -> 
+      ANSITerminal.print_string [ ANSITerminal.red ]   
+      "Here are all the stocks you own, their price, and your shares: \n";
+      print_tuple_list(portfolio curr_acc.portfolio);
+      prompt_command(curr_acc)
 
-  | Dep amt -> ANSITerminal.print_string [ ANSITerminal.red ]   
-    ("Successfully deposited : " ^ string_of_float amt ^ "\n");
-     let new_acc = deposit amt curr_acc in prompt_command(new_acc) 
+    | Dep amt -> ANSITerminal.print_string [ ANSITerminal.red ]   
+      ("Successfully deposited : " ^ string_of_float amt ^ "\n");
+      let new_acc = deposit amt curr_acc in prompt_command(new_acc) 
 
-  | Bal -> 
-    ANSITerminal.print_string [ ANSITerminal.red ]   
-    ("Your current balance (cash and stock worth combined) is: " 
-    ^ (string_of_float curr_acc.stock_balance) ^ "\n");
-    prompt_command(curr_acc) 
-    
-  | Help -> ANSITerminal.print_string [ ANSITerminal.red ]   
-    "Available commands
-    \n-bal
-    \n-portfolio
-    \n-dep [amt]
-    \n-withdraw [amt]
-    \n-view [ticker]
-    \n-help
-    \n-quit\n";
-    prompt_command(curr_acc)
-
-  | Quit -> ANSITerminal.print_string [ ANSITerminal.red ]   
-    "Terminating brokerage simulation. Have a wonderful day! 
-    If you want to run this program again, please type [make play]\n";
-
-  | Withdraw amt -> 
-    ANSITerminal.print_string [ ANSITerminal.red ]   
-    ("Withdrawing $" ^ string_of_float amt ^ "from your account. Type -bal to see new balance");
-      let new_acc = withdraw amt curr_acc in 
-      prompt_command(new_acc)
+    | Bal -> 
+      ANSITerminal.print_string [ ANSITerminal.red ]   
+      ("Your current balance (cash and stock worth combined) is: " 
+      ^ (string_of_float curr_acc.stock_balance) ^ "\n");
+      prompt_command(curr_acc) 
       
-  | View ticker ->
-    try
-      let _ = get_ticker_price ticker in prompt_command(curr_acc)
-    with
-    | NoSuchStock _ -> ANSITerminal.print_string [ ANSITerminal.red ]   
-    "Your stock ticker does not exist. Try running another command again.";
-    prompt_command(curr_acc)
 
-  | Invalid -> 
-    invalid_msg();
-    prompt_command(curr_acc)
+    (*Removed \n-view [ticker] feature from UI. Run separately in ./operate *)
+    | Help -> ANSITerminal.print_string [ ANSITerminal.red ]   
+      "Available commands
+      \n-bal
+      \n-portfolio
+      \n-dep [amt]
+      \n-withdraw [amt]
+      \n-help
+      \n-quit\n";
+      prompt_command(curr_acc)
+
+    | Quit -> ANSITerminal.print_string [ ANSITerminal.red ]   
+      "Terminating brokerage simulation. Have a wonderful day! 
+      If you want to run this program again, please type [make play]\n";
+
+    | Withdraw amt -> 
+      try
+      ANSITerminal.print_string [ ANSITerminal.red ]   
+      ("Withdrawing $" ^ string_of_float amt ^ "from your account. 
+      Type -bal to see new balance\n");
+        let new_acc = withdraw amt curr_acc in
+        prompt_command(new_acc)
+      with |
+      Broke -> 
+        ANSITerminal.print_string [ ANSITerminal.red ]   
+      ("Withdrawing $" ^ string_of_float amt ^ " is more than is in your account. 
+      Try again with a valid withdrawal."); 
+      prompt_command(curr_acc)
+
+    | _ -> 
+      invalid_msg();prompt_command(curr_acc)
+
+    (*Temporarily removing this feature due to 
+    asynchronous/synchronous programming 
+    bug with Lwt.main package. 
+    Please run this feature of our program in ./operate/main.ml*)
+
+    (* | View ticker ->
+      try
+        let ticker_price = display_ticker_thing
+      with
+        | _ -> ANSITerminal.print_string [ ANSITerminal.red ]   
+        "Your stock ticker does not exist. Try running another command again.";
+        prompt_command(curr_acc)
+    with |
+     _ -> invalid_msg();prompt_command(curr_acc) *)
+
+  with | Invalid -> invalid_msg(); prompt_command(curr_acc)
+
 
 let aapl_stock = {ticker = "AAPL"; price = 135.0}
 let meta_stock = {ticker = "META"; price = 175.0}
 let fresh_acc_example_preloaded_stocks = {
   stock_balance = 0.;
   cash_balance = 0.;
-  portfolio = [(aapl_stock, 2.0); (meta_stock, 3.0)];
+  portfolio = [(aapl_stock, 0.0); (meta_stock, 0.0)];
 }
 
-(** new_user creates a new user within the UI and prints out an empty portfolio,
+(* new_user creates a new user within the UI and a gifted portfolio with some stocks 
+and prints out an empty portfolio,
     giving the user the option to view stocks*)
-    let new_user () =
-      print_endline
-        "You currently have no stocks owned with a balance of 0.0. Type -help to \
-         view all our brokerage feature commands";
-      ANSITerminal.print_string [ ANSITerminal.red ]
-      "Type something to get started";
-      print_string "> ";
-      match read_line () with
-      | h -> prompt_command(fresh_acc_example_preloaded_stocks)
+let new_user () =
+  print_endline
+    "You're a new user with balance of $0. We've loaded your portfolio with some stock names and their prices
+    so you can try out our -portfolio feature. Type -help to \
+      view all our brokerage feature commands";
+  prompt_command(fresh_acc_example_preloaded_stocks)
 
 
 let rec terms () =
