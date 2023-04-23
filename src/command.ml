@@ -3,6 +3,8 @@ type command =
   | Portfolio
   | Dep of float
   | Withdraw of float
+  | Buy of (string * float)
+  | Sell of (string * float)
   (* | View of string *)
   (*Feature disabled temporarily for UI*)
   | Quit
@@ -32,6 +34,10 @@ let parse str =
       Withdraw (float_of_string amt)
       (* | "-view" :: [ ticker ] -> View ticker *)
       (*Feature disabled temporarily for UI*)
+  | "-buy" :: ticker :: num_shares :: [ _ ] ->
+      Buy (ticker, float_of_string num_shares)
+  | "-sell" :: ticker :: num_shares :: [ _ ] ->
+      Sell (ticker, float_of_string num_shares)
   | [ "-help" ] -> Help
   | [ "-quit" ] -> Quit
   | [ _ ] -> raise Invalid

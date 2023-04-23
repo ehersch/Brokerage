@@ -6,11 +6,7 @@ open Unit
 open Yojson.Basic.Util
 
 exception NoSuchStock of string
-(** Raised when this ticker symbol does not exist. *)
 
-(** - Returns: [get_ticker_price ticker] grabs the symbol [ticker] and retrieves
-      the closing price from yesterday.
-    - Raise: exception [NoSuchStock] if ticker symbol does not exist. *)
 let base_url = "https://api.polygon.io"
 
 (** Personal key for our team. Max calls per min = 5*)
@@ -23,19 +19,18 @@ let ticker =
      print_string "> ";
      read_line ())
 
-(** - Returns: [proper_year year] the stringified year of the time field [year].
-    - Example: [proper_year 123] is "2023". *)
+(**[proper_year year] is the stringified year of the time field [year]. Example:
+   [proper_year 123] is "2023". *)
 let proper_year year = string_of_int (year + 1900)
 
-(** - Returns: [proper_date date] the stringified integer which always has two
-      digits [date].
-    - Requires: [date] is an integer from 0 to 31.
-    - Example: [proper_date 8] is "08". *)
+(** [proper_date date] is the stringified integer which always has two digits
+    [date]. Requires [date] is an integer from 0 to 31. Example: [proper_date 8]
+    is "08". *)
 let proper_date date =
   if date < 10 then "0" ^ string_of_int date else string_of_int date
 
-(** - Returns: [get_date] the current date in year-month-day format
-    - Example: [get_date] today is 2023-03-19. *)
+(** [get_date] is the current date in year-month-day format. Example: [get_date]
+    today is 2023-03-19. *)
 let get_date =
   let t = Unix.localtime (Unix.time ()) in
   proper_year t.tm_year ^ "-"
