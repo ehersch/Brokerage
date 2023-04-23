@@ -25,4 +25,4 @@ opendoc: doc
 	@bash opendoc.sh
 
 zip:
-	zip -r jamestreet.zip *
+	zip -r brokerage.zip *
