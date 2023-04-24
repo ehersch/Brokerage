@@ -7,11 +7,7 @@ open Yojson.Basic.Util
 open CalendarLib
 
 exception NoSuchStock of string
-(** Raised when this ticker symbol does not exist. *)
 
-(** - Returns: [get_ticker_price ticker] grabs the symbol [ticker] and retrieves
-      the closing price from yesterday.
-    - Raise: exception [NoSuchStock] if ticker symbol does not exist. *)
 let base_url = "https://api.polygon.io"
 
 (** Personal key for our team. Max calls per min = 5*)

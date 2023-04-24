@@ -3,15 +3,10 @@ open Stocks
 exception Broke
 exception OverMemory
 
-type stock = {
-  ticker : string;
-  price : float;
-}
-
 type account = {
   stock_balance : float;
   cash_balance : float;
-  portfolio : (stock * float) list;
+  portfolio : (string * float) list;
 }
 
 type transaction = {
@@ -38,7 +33,7 @@ let deposit (amt : float) (acc : account) =
 
 let balance acc = string_of_float acc.stock_balance
 
-let rec portfolio (port : (stock * float) list) =
+let rec portfolio (port : (string * float) list) =
   match port with
   | [] -> []
-  | (h, q) :: t -> (h.ticker, h.price, q) :: portfolio t
+  | (h, q) :: t -> (h, q) :: portfolio t
