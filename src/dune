@@ -9,6 +9,7 @@
   cohttp-lwt
   cohttp
   yojson
-  tls-lwt)
+  tls-lwt
+  calendar)
  (preprocess
   (pps lwt_ppx)))
