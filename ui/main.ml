@@ -19,11 +19,15 @@ let rec prompt_command (curr_acc  : account) =
   print_string "> ";
   try
     match parse(read_line()) with
-
+    | Buy _ -> prompt_command(curr_acc)
+    | Sell _ -> prompt_command(curr_acc)
+    | View ticker -> print_endline ("Price for " ^ ticker ^ ": " 
+    ^ string_of_float (get_ticker_price (String.uppercase_ascii ticker))); 
+    prompt_command(curr_acc)
     | Portfolio -> 
       ANSITerminal.print_string [ ANSITerminal.yellow ]   
       "Here are all the stocks you own, their price, and your shares: \n";
-      print_tuple_list(portfolio curr_acc.portfolio);
+      (* print_tuple_list(portfolio curr_acc.portfolio); *)
       prompt_command(curr_acc)
 
     | Dep amt -> ANSITerminal.print_string [ ANSITerminal.green ]   
@@ -45,7 +49,9 @@ let rec prompt_command (curr_acc  : account) =
       \n-dep [amt]
       \n-withdraw [amt]
       \n-help
-      \n-quit\n";
+      \n-quit
+      \n-view [ticker]\n"
+      ;
       prompt_command(curr_acc)
 
     | Quit -> ANSITerminal.print_string [ ANSITerminal.green ]   
@@ -65,28 +71,14 @@ let rec prompt_command (curr_acc  : account) =
       ("$" ^ string_of_float amt ^ " is more than is in your account. 
       Try again with a valid withdrawal."); 
       prompt_command(curr_acc)
-
     | _ -> 
       invalid_msg();prompt_command(curr_acc)
-
-    (*Temporarily removing this feature due to 
-    asynchronous/synchronous programming 
-    bug with Lwt.main package. 
-    Please run this feature of our program in ./operate/main.ml*)
-
-    (* | View ticker ->
-      try
-        let ticker_price = display_ticker_thing
-      with
-        | _ -> ANSITerminal.print_string [ ANSITerminal.red ]   
-        "Your stock ticker does not exist. Try running another command again.";
-        prompt_command(curr_acc)
-    with |
-     _ -> invalid_msg();prompt_command(curr_acc) *)
 
   with 
   | Invalid -> invalid_msg(); prompt_command(curr_acc)
   | Empty -> invalid_msg(); prompt_command(curr_acc)
+  | NoSuchStock _ -> print_endline
+  "This stock does not exist. Try again."; prompt_command(curr_acc)
 
 
 let aapl_stock = {ticker = "AAPL"; price = 135.0}
