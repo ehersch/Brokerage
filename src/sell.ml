@@ -1,3 +1,6 @@
+exception NoSuchStock of string
+exception Broke
+
 let update_avg (a1, f1) (a2, f2) =
   ((a1 *. f1) +. (a2 *. f2)) /. Float.abs (f1 -. f2)
 
@@ -34,15 +37,19 @@ let order lst =
   combine_entries [] sorted_lst
 
 let sell shares ticker acc =
-  let price = Lwt_main.run (Stocks.get_ticker_price ticker) in
-  let liquid =
-    float_of_string (Account.balance (Account.deposit (shares *. price) acc))
-  in
-  {
-    Account.stock_balance = acc.stock_balance -. (shares *. price);
-    Account.cash_balance = liquid;
-    Account.portfolio =
-      order
-        (({ Account.ticker; Account.price = 0. -. price }, shares)
-        :: acc.portfolio);
-  }
+  try
+    let price = Stocks.get_ticker_price ticker in
+    let liquid =
+      float_of_string (Account.balance (Account.deposit (shares *. price) acc))
+    in
+    {
+      Account.stock_balance = acc.stock_balance -. (shares *. price);
+      Account.cash_balance = liquid;
+      Account.portfolio =
+        order
+          (({ Account.ticker; Account.price = 0. -. price }, shares)
+          :: acc.portfolio);
+    }
+  with
+  | Broke -> raise Broke
+  | exc -> raise (NoSuchStock ticker)

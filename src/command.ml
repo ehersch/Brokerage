@@ -33,9 +33,9 @@ let parse str =
       Withdraw (float_of_string amt)
       (* | "-view" :: [ ticker ] -> View ticker *)
       (*Feature disabled temporarily for UI*)
-  | "-buy" :: ticker :: num_shares :: [ _ ] ->
+  | "-buy" :: ticker :: [ num_shares ] ->
       Buy (ticker, float_of_string num_shares)
-  | "-sell" :: ticker :: num_shares :: [ _ ] ->
+  | "-sell" :: ticker :: [ num_shares ] ->
       Sell (ticker, float_of_string num_shares)
   | [ "-help" ] -> Help
   | [ "-quit" ] -> Quit

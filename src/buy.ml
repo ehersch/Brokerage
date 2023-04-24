@@ -1,3 +1,5 @@
+exception NoSuchStock of string
+
 let update_avg (a1, f1) (a2, f2) = ((a1 *. f1) +. (a2 *. f2)) /. (f1 +. f2)
 
 let order lst =
@@ -33,12 +35,14 @@ let order lst =
   combine_entries [] sorted_lst
 
 let buy shares ticker acc =
-  let price = Lwt_main.run (Stocks.get_ticker_price ticker) in
-  let liquid =
-    float_of_string (Account.balance (Account.withdraw (shares *. price) acc))
-  in
-  {
-    Account.stock_balance = acc.stock_balance +. (shares *. price);
-    Account.cash_balance = liquid;
-    Account.portfolio = order (({ ticker; price }, shares) :: acc.portfolio);
-  }
+  try
+    let price = Stocks.get_ticker_price ticker in
+    let liquid =
+      float_of_string (Account.balance (Account.withdraw (shares *. price) acc))
+    in
+    {
+      Account.stock_balance = acc.stock_balance +. (shares *. price);
+      Account.cash_balance = liquid;
+      Account.portfolio = order (({ ticker; price }, shares) :: acc.portfolio);
+    }
+  with exc -> raise (NoSuchStock ticker)

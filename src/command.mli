@@ -7,6 +7,7 @@ type command =
   | Withdraw of float
   | Buy of (string * float)
   | Sell of (string * float)
+  | View of string
   | Quit
   | Help
 

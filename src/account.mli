@@ -53,3 +53,8 @@ val portfolio : (stock * float) list -> (string * string * float) list
     and quantity of shares from the account's portfolio. Example: portfolio
     \[\{ticker = AAPL; price = 125.0\} 3.0); (\{ticker = META; price = 175.0\},
     2.0)\] is \[\["AAPL";"125.0";"3.0"\];\["META";"175.0";"2.0"\]\]*)
+
+val port_to_string : (stock * float) list -> string
+(** [port_to_string port] is a string representation of an account's portfolio. Example: portfolio 
+[{ticker = AAPL; price = 125.0}, 3.0 ); {ticker = META; price = 175.0}, 2.0] is 
+{(AAPL,125.0,3.0), (META,175.0,2.0)} *)
