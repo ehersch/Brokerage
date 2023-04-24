@@ -5,8 +5,7 @@ type command =
   | Withdraw of float
   | Buy of (string * float)
   | Sell of (string * float)
-  (* | View of string *)
-  (*Feature disabled temporarily for UI*)
+  | View of string
   | Quit
   | Help
 
@@ -40,6 +39,7 @@ let parse str =
       Sell (ticker, float_of_string num_shares)
   | [ "-help" ] -> Help
   | [ "-quit" ] -> Quit
+  | "-view" :: [ ticker ] -> View ticker
   | [ _ ] -> raise Invalid
   | _ :: tl -> raise Invalid
   | [] -> raise Empty

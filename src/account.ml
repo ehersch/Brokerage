@@ -36,4 +36,8 @@ let balance acc = string_of_float acc.stock_balance
 let rec portfolio (port : (string * float) list) =
   match port with
   | [] -> []
+<<<<<<< HEAD
   | (h, q) :: t -> (h, q) :: portfolio t
+=======
+  | (h, q) :: t -> (h.ticker, string_of_float h.price, q) :: portfolio t
+>>>>>>> refs/remotes/origin/main
