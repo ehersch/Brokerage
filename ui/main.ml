@@ -65,6 +65,9 @@ let rec prompt_command (curr_acc : account) =
             prompt_command curr_acc
         | NoSuchStock _ ->
             print_endline "This stock does not exist. Try again.";
+            prompt_command curr_acc
+        | NotOwned _ ->
+            print_endline "You do not own any shares of this stock.";
             prompt_command curr_acc)
     | View ticker ->
         print_endline
@@ -74,7 +77,7 @@ let rec prompt_command (curr_acc : account) =
     | Portfolio ->
         ANSITerminal.print_string [ ANSITerminal.yellow ]
           "Here are all the stocks you own, their price, and your shares: \n";
-        (* print_tuple_list(portfolio curr_acc.portfolio); *)
+        print_string (port_to_string curr_acc.portfolio);
         prompt_command curr_acc
     | Dep amt ->
         ANSITerminal.print_string [ ANSITerminal.green ]
@@ -84,8 +87,7 @@ let rec prompt_command (curr_acc : account) =
     | Bal ->
         ANSITerminal.print_string [ ANSITerminal.cyan ]
           ("Your current balance (cash and stock worth combined) is: "
-          ^ string_of_float curr_acc.stock_balance
-          ^ "\n");
+         ^ Account.balance curr_acc ^ "\n");
         prompt_command curr_acc
     (*Removed \n-view [ticker] feature from UI. Run separately in ./operate *)
     | Help ->
@@ -126,8 +128,9 @@ let rec prompt_command (curr_acc : account) =
         | Broke ->
             ANSITerminal.print_string [ ANSITerminal.magenta ]
               ("$" ^ string_of_float amt
-             ^ " is more than is in your account. \n\
-               \      Try again with a valid withdrawal.");
+             ^ " is more than is in your account (in cash). \n\
+               \      Try again with a valid withdrawal, or sell your \
+                portfolio.");
             prompt_command curr_acc
         | _ ->
             invalid_msg ();
@@ -154,9 +157,7 @@ let fresh_acc_example_preloaded_stocks =
    stocks*)
 let new_user () =
   print_endline
-    "You're a new user with balance of $0. We've loaded your portfolio with \n\
-    \    some stock names that you 'own' zero shares of and their prices\n\
-    \    so you can try out our -portfolio feature. Type -help to view all our \
+    "You're a new user with balance of $0. Type -help to view all our \
      brokerage feature commands";
   prompt_command fresh_acc_example_preloaded_stocks
 
@@ -267,7 +268,7 @@ let main () =
   print_endline "";
 
   ANSITerminal.print_string [ ANSITerminal.red ]
-    "To begin trading, please indicate if you are atleast eighteen years old. \
+    "To begin trading, please indicate if you are at least eighteen years old. \
      Please enter 'yes' or 'no' ";
   print_string "> ";
   match read_line () with

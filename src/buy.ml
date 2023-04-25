@@ -1,4 +1,5 @@
 exception NoSuchStock of string
+exception Broke
 
 let update_avg (a1, f1) (a2, f2) = ((a1 *. f1) +. (a2 *. f2)) /. (f1 +. f2)
 
@@ -37,12 +38,14 @@ let order lst =
 let buy shares ticker acc =
   try
     let price = Stocks.get_ticker_price ticker in
-    let liquid =
-      float_of_string (Account.balance (Account.withdraw (shares *. price) acc))
-    in
-    {
-      Account.stock_balance = acc.stock_balance +. (shares *. price);
-      Account.cash_balance = liquid;
-      Account.portfolio = order (({ ticker; price }, shares) :: acc.portfolio);
-    }
-  with exc -> raise (NoSuchStock ticker)
+    if shares *. price > (Account.withdraw 0. acc).cash_balance then raise Broke
+    else
+      let liquid = (Account.withdraw (shares *. price) acc).cash_balance in
+      {
+        Account.stock_balance = acc.stock_balance +. (shares *. price);
+        Account.cash_balance = liquid;
+        Account.portfolio = order (({ ticker; price }, shares) :: acc.portfolio);
+      }
+  with
+  | Broke -> raise Broke
+  | exc -> raise (NoSuchStock ticker)

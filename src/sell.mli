@@ -1,4 +1,12 @@
 (** Sell module *)
+exception NoSuchStock of string
+(** Raised when this ticker symbol does not exist. *)
+
+exception NotOwned of string
+(** Raised when the portfolio does not contain this stock in the first place. *)
+
+exception Broke
+(** Raised when attempting to withdraw more money than available.*)
 
 val update_avg : float * float -> float * float -> float
 (** [update_avg (a1, f1) (a2, f2)] is the weighted average of [a1] and [a2],

@@ -16,7 +16,6 @@ exception Empty
     not an empty string becomes the command type listed in -help and the rest of
     the words if any become the phrase. Raises [Invalid] when input is not in
       the format of -command [number if required]. Example:
-
     - parse " -dep 500." is [Dep 500.0]]
     - parse "-bal" is [Bal] *)
 let parse str =
@@ -34,9 +33,9 @@ let parse str =
       (* | "-view" :: [ ticker ] -> View ticker *)
       (*Feature disabled temporarily for UI*)
   | "-buy" :: ticker :: [ num_shares ] ->
-      Buy (ticker, float_of_string num_shares)
+      Buy (String.uppercase_ascii ticker, float_of_string num_shares)
   | "-sell" :: ticker :: [ num_shares ] ->
-      Sell (ticker, float_of_string num_shares)
+      Sell (String.uppercase_ascii ticker, float_of_string num_shares)
   | [ "-help" ] -> Help
   | [ "-quit" ] -> Quit
   | "-view" :: [ ticker ] -> View ticker
