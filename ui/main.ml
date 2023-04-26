@@ -59,8 +59,8 @@ let rec prompt_command (curr_acc : account) =
         | Broke ->
             ANSITerminal.print_string [ ANSITerminal.magenta ]
               ("Selling " ^ string_of_float num_shares ^ " of " ^ ticker
-             ^ " is more than the number of \n\
-               \        shares that you own in your account. \n\
+             ^ " is more than the number of shares that you own in your\n\
+                account. \n\
                \    Try again with a valid sale.");
             prompt_command curr_acc
         | NoSuchStock _ ->
