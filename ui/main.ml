@@ -33,13 +33,13 @@ let rec prompt_command (curr_acc : account) =
           print_endline (port_to_string new_acc.portfolio);
           prompt_command new_acc
         with
-        | Broke ->
+        | Buy.Broke ->
             ANSITerminal.print_string [ ANSITerminal.magenta ]
               ("Purchasing " ^ string_of_float num_shares ^ " of " ^ ticker
              ^ " is more than what is in your account. \n\
                \      Try again with a valid purchase.");
             prompt_command curr_acc
-        | NoSuchStock _ ->
+        | Buy.NoSuchStock _ ->
             print_endline "This stock does not exist. Try again.";
             prompt_command curr_acc)
     | Sell (ticker, num_shares) -> (
