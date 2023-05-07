@@ -1,4 +1,5 @@
 (** Buy module *)
+
 exception NoSuchStock of string
 (** Raised when this ticker symbol does not exist. *)
 

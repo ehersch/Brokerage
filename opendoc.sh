@@ -1,6 +1,6 @@
 #!/bin/bash
 
-LIB="Stocks"
+LIB="Backend"
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
   # macOS

@@ -1,6 +1,6 @@
 (library
- (name backend)
- (public_name Backend)
+ (name brokerage)
+ (public_name Brokerage)
  (libraries
   cohttp-lwt-unix
   cohttp-top

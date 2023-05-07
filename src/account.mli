@@ -1,3 +1,5 @@
+(** An account to make transactions with.*)
+
 exception Broke
 (** Raised when attempting to withdraw more money than available.*)
 
@@ -55,8 +57,9 @@ val portfolio : (stock * float) list -> (string * float * float) list
     2.0)\] is \[\["AAPL";"125.0";"3.0"\];\["META";"175.0";"2.0"\]\]*)
 
 val port_to_string : (stock * float) list -> string
-(** [port_to_string port] is a string representation of an account's portfolio. Example: portfolio 
-[{ticker = AAPL; price = 125.0}, 3.0 ); {ticker = META; price = 175.0}, 2.0] is 
-{(AAPL,125.0,3.0), (META,175.0,2.0)} *)
+(** [port_to_string port] is a string representation of an account's portfolio.
+    Example: portfolio
+    [{ticker = AAPL; price = 125.0}, 3.0 ); {ticker = META; price = 175.0}, 2.0]
+    is \{(AAPL,125.0,3.0), (META,175.0,2.0)\} *)
 
 val only_stocks : account -> string list
