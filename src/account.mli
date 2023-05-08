@@ -7,6 +7,10 @@ exception OverMemory
 (** Raised when a user attempts to deposit money into an account resulting in an
     integer the brokerage cannot handle: 1073741823 which leads to overmemory *)
 
+exception StockNotFound
+(** Raised when a user attempts to remove a ticker from their watchlist that is
+    not in their watchlist *)
+
 type stock = {
   ticker : string;
   price : float;
@@ -18,6 +22,7 @@ type account = {
   cash_balance : float;
   portfolio : (stock * float) list;
   transaction_log : transaction list;
+  watchlist : stock list;
 }
 
 (** Type [account] contains the floats [stock_balance], [cash_balance] and the
@@ -85,3 +90,22 @@ val port_to_string : (stock * float) list -> string
 val only_stocks : account -> string list
 
 (** Returns only the stocks in an account. *)
+val add_watchlist : string -> account -> account
+(** [add_watchlist ticker acc] adds the selected ticker and its current price
+    into the account's watchlist or doesn't change the account's watchlist if
+    the ticker isn't found. Example: adding MSFT into a watchlist of
+    [{ticker = AAPL; price = 125.0}; {ticker = META; price = 175.0}] is
+    [{ticker = AAPL; price = 125.0}; {ticker = META; price = 175.0 }; {ticker = MSFT; price = 150.0}] *)
+
+val remove_watchlist : string -> account -> account
+(** [remove_watchlist ticker acc] removes the selected ticker from the account's
+    watchlist or raises StockNotFound if the selected ticker is not in the
+    account's watchlist. Example: removing AAPL from a watchlist of
+    [{ticker = AAPL; price = 125.0}; {ticker = META; price = 175.0}] is
+    [{ticker = META; price = 175.0 }] *)
+
+val watch_to_string : stock list -> string
+(** [watch_to_string watchlist] is a string representation of an account's
+    watchlist. Example: watchlist
+    [{ticker = AAPL; price = 125.0}; {ticker = META; price = 175.0}] is
+    \{(AAPL,125.0), (META,175.0)\}*)

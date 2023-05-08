@@ -64,6 +64,7 @@ let buy shares ticker acc =
               stock = { ticker; price = Stocks.get_ticker_price ticker };
             }
             acc.transaction_log;
+        Account.watchlist = acc.watchlist;
       }
   with
   | Broke -> raise Broke

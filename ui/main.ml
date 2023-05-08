@@ -20,70 +20,141 @@ let rec prompt_command (curr_acc : account) =
   print_string "> ";
   try
     match parse (read_line ()) with
-    | Buy (ticker, num_shares) -> (
-        try
+    | Buy (ticker, num_shares) ->
+        if num_shares > 0.0 then (
+          try
+            ANSITerminal.print_string [ ANSITerminal.yellow ]
+              ("Buying " ^ string_of_float num_shares ^ " of " ^ ticker
+             ^ " into your portfolio... \n      Type -bal to see new balances\n"
+              );
+            let new_acc =
+              buy num_shares (String.uppercase_ascii ticker) curr_acc
+            in
+            ANSITerminal.print_string [ ANSITerminal.green ]
+              ("You have successfully bought " ^ string_of_float num_shares
+             ^ " shares of " ^ ticker);
+            print_endline "\n Here is your updated portfolio";
+            print_endline (port_to_string new_acc.portfolio);
+            prompt_command new_acc
+          with
+          | Buy.Broke ->
+              ANSITerminal.print_string [ ANSITerminal.magenta ]
+                ("Purchasing " ^ string_of_float num_shares ^ " of " ^ ticker
+               ^ " is more than what is in your account. \n\
+                 \      Try again with a valid purchase.");
+              prompt_command curr_acc
+          | Buy.NoSuchStock _ ->
+              print_endline "This stock does not exist. Try again.";
+              prompt_command curr_acc)
+        else
           ANSITerminal.print_string [ ANSITerminal.yellow ]
-            ("Buying " ^ string_of_float num_shares ^ " of " ^ ticker
-           ^ " into your portfolio... \n      Type -bal to see new balances\n");
-          let new_acc = buy num_shares ticker curr_acc in
-          ANSITerminal.print_string [ ANSITerminal.green ]
-            ("You have successfully bought " ^ string_of_float num_shares
-           ^ " shares of " ^ ticker);
-          print_endline "\n Here is your updated portfolio";
-          print_endline (port_to_string new_acc.portfolio);
-          prompt_command new_acc
-        with
-        | Buy.Broke ->
-            ANSITerminal.print_string [ ANSITerminal.magenta ]
-              ("Purchasing " ^ string_of_float num_shares ^ " of " ^ ticker
-             ^ " is more than what is in your account. \n\
-               \      Try again with a valid purchase.");
-            prompt_command curr_acc
-        | Buy.NoSuchStock _ ->
-            print_endline "This stock does not exist. Try again.";
-            prompt_command curr_acc)
-    | Sell (ticker, num_shares) -> (
-        try
-          ANSITerminal.print_string [ ANSITerminal.yellow ]
-            ("Attemping to sell " ^ string_of_float num_shares ^ " of " ^ ticker
-           ^ " from your portfolio... \n       Type -bal to see new balances\n"
-            );
-          let new_acc = sell num_shares ticker curr_acc in
-          ANSITerminal.print_string [ ANSITerminal.green ]
-            ("You have successfully sold " ^ string_of_float num_shares
-           ^ " shares of " ^ ticker);
-          print_endline "\n Here \n          is your updated portfolio";
-          print_endline (port_to_string new_acc.portfolio);
-          prompt_command new_acc
-        with
-        | Broke ->
-            ANSITerminal.print_string [ ANSITerminal.magenta ]
-              ("Selling " ^ string_of_float num_shares ^ " of " ^ ticker
-             ^ " is more than the number of shares that you own in your\n\
-                account. \n\
-               \    Try again with a valid sale.");
-            prompt_command curr_acc
-        | NoSuchStock _ ->
-            print_endline "This stock does not exist. Try again.";
-            prompt_command curr_acc
-        | NotOwned _ ->
-            print_endline "You do not own any shares of this stock.";
-            prompt_command curr_acc)
-    | View ticker ->
-        print_endline
-          ("Price for " ^ ticker ^ ": "
-          ^ string_of_float (get_ticker_price (String.uppercase_ascii ticker)));
+            "Error, the number of shares you want to buy must be greater than 0";
         prompt_command curr_acc
+    | Sell (ticker, num_shares) ->
+        if num_shares > 0.0 then (
+          try
+            ANSITerminal.print_string [ ANSITerminal.yellow ]
+              ("Attemping to sell " ^ string_of_float num_shares ^ " of "
+             ^ ticker
+             ^ " from your portfolio... \n\
+               \       Type -bal to see new balances\n");
+            let new_acc =
+              sell num_shares (String.uppercase_ascii ticker) curr_acc
+            in
+            ANSITerminal.print_string [ ANSITerminal.green ]
+              ("You have successfully sold " ^ string_of_float num_shares
+             ^ " shares of " ^ ticker);
+            print_endline "\n Here \n          is your updated portfolio";
+            print_endline (port_to_string new_acc.portfolio);
+            prompt_command new_acc
+          with
+          | Broke ->
+              ANSITerminal.print_string [ ANSITerminal.magenta ]
+                ("Selling " ^ string_of_float num_shares ^ " of " ^ ticker
+               ^ " is more than the number of shares that you own in your\n\
+                  account. \n\
+                 \    Try again with a valid sale.");
+              prompt_command curr_acc
+          | NoSuchStock _ ->
+              print_endline "This stock does not exist. Try again.";
+              prompt_command curr_acc
+          | NotOwned _ ->
+              print_endline "You do not own any shares of this stock.";
+              prompt_command curr_acc)
+        else
+          ANSITerminal.print_string [ ANSITerminal.yellow ]
+            "Error, the number of shares you want to sell must be greater than \
+             0";
+        prompt_command curr_acc
+    | View ticker -> (
+        try
+          print_endline
+            ("Price for " ^ ticker ^ ": "
+            ^ string_of_float (get_ticker_price (String.uppercase_ascii ticker))
+            );
+          prompt_command curr_acc
+        with NoSuchStock _ ->
+          ANSITerminal.print_string [ ANSITerminal.red ]
+            "This stock does not exist. Try again";
+          prompt_command curr_acc)
     | Portfolio ->
         ANSITerminal.print_string [ ANSITerminal.yellow ]
           "Here are all the stocks you own, their price, and your shares: \n";
         print_string (port_to_string curr_acc.portfolio);
         prompt_command curr_acc
-    | Dep amt ->
+    | Watchlist ->
         ANSITerminal.print_string [ ANSITerminal.green ]
-          ("Successfully deposited : " ^ string_of_float amt ^ "\n");
-        let new_acc = deposit amt curr_acc in
-        prompt_command new_acc
+          "Here is your current watchlist: \n";
+        print_string (watch_to_string curr_acc.watchlist);
+        prompt_command curr_acc
+    | WatchlistAdd ticker -> (
+        try
+          let new_acc =
+            add_watchlist (String.uppercase_ascii ticker) curr_acc
+          in
+          ANSITerminal.print_string [ ANSITerminal.green ]
+            (ticker
+           ^ " was successfully added to your watchlist. \n\
+             \    Here is your updated watchlist: \n");
+          print_string (watch_to_string new_acc.watchlist);
+          prompt_command new_acc
+        with Stocks.NoSuchStock _ ->
+          ANSITerminal.print_string [ ANSITerminal.yellow ]
+            "This stock does not exist. Try again";
+          prompt_command curr_acc)
+    | WatchlistRemove ticker -> (
+        try
+          let new_acc =
+            remove_watchlist (String.uppercase_ascii ticker) curr_acc
+          in
+          ANSITerminal.print_string [ ANSITerminal.green ]
+            (ticker
+           ^ " was successfully removed from your watchlist. \n\
+             \    Here is your updated watchlist: \n");
+          print_string (watch_to_string new_acc.watchlist);
+          prompt_command new_acc
+        with
+        | Account.StockNotFound ->
+            ANSITerminal.print_string [ ANSITerminal.green ]
+              "This stock is not in your watchlist so it cannot be removed. \n\
+              \   Here is your watchlist: \n\
+              \ ";
+            print_string (watch_to_string curr_acc.watchlist);
+            prompt_command curr_acc
+        | Stocks.NoSuchStock _ ->
+            ANSITerminal.print_string [ ANSITerminal.yellow ]
+              "This stock does not exist. Try again";
+            prompt_command curr_acc)
+    | Dep amt ->
+        if amt > 0.0 then (
+          ANSITerminal.print_string [ ANSITerminal.green ]
+            ("Successfully deposited : " ^ string_of_float amt ^ "\n");
+          let new_acc = deposit amt curr_acc in
+          prompt_command new_acc)
+        else
+          ANSITerminal.print_string [ ANSITerminal.red ]
+            "Error, you cannot deposit an amount less than $0.0 ";
+        prompt_command curr_acc
     | Bal ->
         ANSITerminal.print_string [ ANSITerminal.cyan ]
           ("Your current balance (cash and stock worth combined) is: "
@@ -122,35 +193,46 @@ let rec prompt_command (curr_acc : account) =
            -sell [ticker] [number of shares]\n\
           \                                     \n\
            -history\n\
-          \            ";
+          \                                    \n\
+           -watchlist\n\
+          \ \n\
+           -watchlist add [ticker]\n\
+          \      \n\
+           -watchlist remove [ticker]";
         prompt_command curr_acc
     | Quit ->
         ANSITerminal.print_string [ ANSITerminal.green ]
           "Terminating brokerage simulation. Have a wonderful day! \n\
-          \      If you want to run this program again, please type [make play]\n"
+          \      If you want to run this program again, please type [make play]\n";
+        exit 0
     | History ->
         ANSITerminal.print_string [ ANSITerminal.yellow ]
           "Here is your transaction history: \n";
         print_string (Log.to_string curr_acc.transaction_log);
         prompt_command curr_acc
-    | Withdraw amt -> (
-        try
-          ANSITerminal.print_string [ ANSITerminal.yellow ]
-            ("Withdrawing $" ^ string_of_float amt
-           ^ "from your account... \n      Type -bal to see new balance\n");
-          let new_acc = withdraw amt curr_acc in
-          prompt_command new_acc
-        with
-        | Broke ->
-            ANSITerminal.print_string [ ANSITerminal.magenta ]
-              ("$" ^ string_of_float amt
-             ^ " is more than is in your account (in cash). \n\
-               \      Try again with a valid withdrawal, or sell your \
-                portfolio.");
-            prompt_command curr_acc
-        | _ ->
-            invalid_msg ();
-            prompt_command curr_acc)
+    | Withdraw amt ->
+        if amt > 0.0 then (
+          try
+            ANSITerminal.print_string [ ANSITerminal.yellow ]
+              ("Withdrawing $" ^ string_of_float amt
+             ^ "from your account... \n      Type -bal to see new balance\n");
+            let new_acc = withdraw amt curr_acc in
+            prompt_command new_acc
+          with
+          | Broke ->
+              ANSITerminal.print_string [ ANSITerminal.magenta ]
+                ("$" ^ string_of_float amt
+               ^ " is more than is in your account (in cash). \n\
+                 \      Try again with a valid withdrawal, or sell your \
+                  portfolio.");
+              prompt_command curr_acc
+          | _ ->
+              invalid_msg ();
+              prompt_command curr_acc)
+        else
+          ANSITerminal.print_string [ ANSITerminal.red ]
+            "Error, you cannot withdraw an amount less than $0.0 ";
+        prompt_command curr_acc
   with
   | Invalid ->
       invalid_msg ();
@@ -174,6 +256,7 @@ let fresh_acc_example_preloaded_stocks =
     cash_balance = 0.;
     portfolio = [];
     transaction_log = Log.create;
+    watchlist = [];
   }
 
 (* new_user creates a new user within the UI and a gifted portfolio with some

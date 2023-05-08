@@ -3,6 +3,7 @@ open Stocks
 
 exception Broke
 exception OverMemory
+exception StockNotFound
 
 type stock = {
   ticker : string;
@@ -14,6 +15,7 @@ type account = {
   cash_balance : float;
   portfolio : (stock * float) list;
   transaction_log : transaction list;
+  watchlist : stock list;
 }
 
 and transaction = {
@@ -41,6 +43,7 @@ let withdraw (amt : float) (acc : account) =
       cash_balance = b2;
       portfolio = acc.portfolio;
       transaction_log = acc.transaction_log;
+      watchlist = acc.watchlist;
     }
 
 let deposit (amt : float) (acc : account) =
@@ -51,6 +54,7 @@ let deposit (amt : float) (acc : account) =
     cash_balance = b2;
     portfolio = acc.portfolio;
     transaction_log = acc.transaction_log;
+    watchlist = acc.watchlist;
   }
 
 let stock_to_string_pair stk = (stk.ticker, string_of_float stk.price)
@@ -88,4 +92,60 @@ let port_to_string port =
         ^ string_of_float q ^ ") " ^ "\n" ^ to_string t
   in
   let list_text = to_string full_port in
+  "{ " ^ list_text ^ "}"
+
+let add_watchlist ticker acc =
+  try
+    let price2 = Stocks.get_ticker_price ticker in
+    let rec check watchlist tic =
+      match watchlist with
+      | [] -> [ { ticker = tic; price = price2 } ]
+      | { ticker = t1; price = p1 } :: t ->
+          if t1 = tic then
+            let new_stock = { ticker = t1; price = price2 } in
+            new_stock :: t
+          else { ticker = t1; price = p1 } :: check t tic
+    in
+
+    let new_watch = check acc.watchlist ticker in
+    {
+      stock_balance = acc.stock_balance;
+      cash_balance = acc.cash_balance;
+      portfolio = acc.portfolio;
+      transaction_log = acc.transaction_log;
+      watchlist = new_watch;
+    }
+  with exc -> raise (NoSuchStock ticker)
+
+let remove_watchlist ticker acc =
+  try
+    let _ = Stocks.get_ticker_price ticker in
+    let old_length = List.length acc.watchlist in
+    let rec check watchlist tic =
+      match watchlist with
+      | [] -> []
+      | { ticker = t1; price = p1 } :: t ->
+          if t1 = tic then t else { ticker = t1; price = p1 } :: check t tic
+    in
+
+    let new_watch = check acc.watchlist ticker in
+    if List.length new_watch = old_length then raise StockNotFound
+    else
+      {
+        stock_balance = acc.stock_balance;
+        cash_balance = acc.cash_balance;
+        portfolio = acc.portfolio;
+        transaction_log = acc.transaction_log;
+        watchlist = new_watch;
+      }
+  with NoSuchStock ticker -> raise (NoSuchStock ticker)
+
+let watch_to_string list =
+  let rec to_string = function
+    | [] -> ""
+    | { ticker = t; price = p } :: t2 ->
+        "(ticker = " ^ t ^ ", " ^ "average price = " ^ string_of_float p ^ ") "
+        ^ "\n" ^ to_string t2
+  in
+  let list_text = to_string list in
   "{ " ^ list_text ^ "}"
