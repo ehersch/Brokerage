@@ -1,5 +1,6 @@
 type command =
   | Bal
+  | Equity
   | Portfolio
   | Dep of float
   | Withdraw of float
@@ -7,6 +8,7 @@ type command =
   | Sell of (string * float)
   | View of string
   | Quit
+  | History
   | Help
 
 exception Invalid
@@ -26,6 +28,7 @@ let parse str =
   in
   match split_str with
   | [ "-bal" ] -> Bal
+  | [ "-equity" ] -> Equity
   | [ "-portfolio" ] -> Portfolio
   | "-dep" :: [ amt ] -> Dep (float_of_string amt)
   | "-withdraw" :: [ amt ] ->
@@ -38,6 +41,7 @@ let parse str =
       Sell (String.uppercase_ascii ticker, float_of_string num_shares)
   | [ "-help" ] -> Help
   | [ "-quit" ] -> Quit
+  | [ "-history" ] -> History
   | "-view" :: [ ticker ] -> View ticker
   | [ _ ] -> raise Invalid
   | _ :: tl -> raise Invalid

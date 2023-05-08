@@ -1,6 +1,6 @@
 #!/bin/bash
 
-LIB="Backend"
+LIB="Brokerage"
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
   # macOS

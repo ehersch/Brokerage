@@ -89,6 +89,12 @@ let rec prompt_command (curr_acc : account) =
           ("Your current balance (cash and stock worth combined) is: "
          ^ Account.balance curr_acc ^ "\n");
         prompt_command curr_acc
+    | Equity ->
+        ANSITerminal.print_string [ ANSITerminal.cyan ]
+          ("Your current stock balance is: "
+          ^ Account.stock_balance curr_acc
+          ^ "\n");
+        prompt_command curr_acc
     (*Removed \n-view [ticker] feature from UI. Run separately in ./operate *)
     | Help ->
         ANSITerminal.print_string [ ANSITerminal.green ]
@@ -96,6 +102,8 @@ let rec prompt_command (curr_acc : account) =
            Available commands\n\
           \      \n\
            -bal\n\
+          \      \n\
+           -equity\n\
           \      \n\
            -portfolio\n\
           \      \n\
@@ -111,12 +119,20 @@ let rec prompt_command (curr_acc : account) =
           \                          \n\
            -buy [ticker] [number of shares]\n\
           \      \n\
-           -sell [ticker] [number of shares]";
+           -sell [ticker] [number of shares]\n\
+          \                                     \n\
+           -history\n\
+          \            ";
         prompt_command curr_acc
     | Quit ->
         ANSITerminal.print_string [ ANSITerminal.green ]
           "Terminating brokerage simulation. Have a wonderful day! \n\
           \      If you want to run this program again, please type [make play]\n"
+    | History ->
+        ANSITerminal.print_string [ ANSITerminal.yellow ]
+          "Here is your transaction history: \n";
+        print_string (Log.to_string curr_acc.transaction_log);
+        prompt_command curr_acc
     | Withdraw amt -> (
         try
           ANSITerminal.print_string [ ANSITerminal.yellow ]
@@ -145,12 +161,20 @@ let rec prompt_command (curr_acc : account) =
   | NoSuchStock _ ->
       print_endline "This stock does not exist. Try again.";
       prompt_command curr_acc
+  | _ ->
+      print_endline "This stock does not exist. Try again.";
+      prompt_command curr_acc
 
 let aapl_stock = { ticker = "AAPL"; price = 135.0 }
 let meta_stock = { ticker = "META"; price = 175.0 }
 
 let fresh_acc_example_preloaded_stocks =
-  { stock_balance = 0.; cash_balance = 0.; portfolio = [] }
+  {
+    stock_balance = 0.;
+    cash_balance = 0.;
+    portfolio = [];
+    transaction_log = Log.create;
+  }
 
 (* new_user creates a new user within the UI and a gifted portfolio with some
    stocks and prints out an empty portfolio, giving the user the option to view

@@ -2,6 +2,7 @@
     input. *)
 type command =
   | Bal
+  | Equity
   | Portfolio
   | Dep of float
   | Withdraw of float
@@ -9,6 +10,7 @@ type command =
   | Sell of (string * float)
   | View of string
   | Quit
+  | History
   | Help
 
 exception Invalid

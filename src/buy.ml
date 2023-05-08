@@ -1,3 +1,5 @@
+open Unix
+
 exception NoSuchStock of string
 exception Broke
 
@@ -35,6 +37,14 @@ let order lst =
   in
   combine_entries [] sorted_lst
 
+(** Converts the time into an easy-to-read month/day/year string format*)
+let convert_unix_time (t : float) : string =
+  let tm = localtime t in
+  let day = string_of_int tm.tm_mday in
+  let month = string_of_int (tm.tm_mon + 1) in
+  let year = string_of_int (tm.tm_year + 1900) in
+  day ^ "/" ^ month ^ "/" ^ year
+
 let buy shares ticker acc =
   try
     let price = Stocks.get_ticker_price ticker in
@@ -45,6 +55,15 @@ let buy shares ticker acc =
         Account.stock_balance = acc.stock_balance +. (shares *. price);
         Account.cash_balance = liquid;
         Account.portfolio = order (({ ticker; price }, shares) :: acc.portfolio);
+        Account.transaction_log =
+          Log.add
+            {
+              time = convert_unix_time (time ());
+              type_of_transaction = "Buy";
+              share = shares;
+              stock = { ticker; price = Stocks.get_ticker_price ticker };
+            }
+            acc.transaction_log;
       }
   with
   | Broke -> raise Broke

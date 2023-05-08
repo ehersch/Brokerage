@@ -1,3 +1,5 @@
+open Unix
+
 exception NoSuchStock of string
 exception NotOwned of string
 exception Broke
@@ -43,6 +45,14 @@ let rec contains_ticker lst s =
   | [] -> false
   | h :: tl -> if h = s then true else contains_ticker tl s
 
+(** Converts the time into an easy-to-read month/day/year string format*)
+let convert_unix_time (t : float) : string =
+  let tm = localtime t in
+  let day = string_of_int tm.tm_mday in
+  let month = string_of_int (tm.tm_mon + 1) in
+  let year = string_of_int (tm.tm_year + 1900) in
+  day ^ "/" ^ month ^ "/" ^ year
+
 let sell shares ticker acc =
   try
     let price = Stocks.get_ticker_price ticker in
@@ -55,6 +65,15 @@ let sell shares ticker acc =
           order
             (({ Account.ticker; Account.price = 0. -. price }, shares)
             :: acc.portfolio);
+        Account.transaction_log =
+          Log.add
+            {
+              time = convert_unix_time (time ());
+              type_of_transaction = "Sell";
+              share = shares;
+              stock = { ticker; price = Stocks.get_ticker_price ticker };
+            }
+            acc.transaction_log;
       }
     else raise (NotOwned ticker)
   with

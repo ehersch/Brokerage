@@ -17,17 +17,34 @@ type account = {
   stock_balance : float;
   cash_balance : float;
   portfolio : (stock * float) list;
+  transaction_log : transaction list;
 }
-(** Type [account] contains the floats [stock_balance] and [cash_balance] and
-    the set-like-list of stocks [portfolio] and how many shares owned. *)
 
-type transaction = {
-  time : float;
+(** Type [account] contains the floats [stock_balance], [cash_balance] and the
+    set-like-list of stocks [portfolio] and how many shares owned. It
+    additionally contains a list of transactions anf balances named
+    [transaction_log] and [balance_log], respectively*)
+
+and transaction = {
+  time : string;
   type_of_transaction : string;
-  change : float;
+  share : float;
+  stock : stock;
 }
+
+(**Type [transaction] any transaction has a [time], [type_of_transaction],
+   [share], and [stock] field. *)
+
 (** Type [transaction] contains the floats [time] and [change] and the string
     [type_of_transaction]. *)
+
+val stock_to_string_pair : stock -> string * string
+
+(** [stock_to_string_pair stk] returns the tuple of strings where the first
+    element is the ticker and the second element is the price*)
+
+val transaction_to_string_quint :
+  transaction -> string * string * string * string * string
 
 val withdraw : float -> account -> account
 (** [withdraw amt acc] is a record with updated [stock_balance] and
@@ -50,6 +67,9 @@ val balance : account -> string
     Example: balance \{stock_balance = 500.0; cash_balance = 500.0 ; portfolio =
     []\} is "500.0"*)
 
+val stock_balance : account -> string
+(** [stock_balance acc] is the stock balance of the account in string form. *)
+
 val portfolio : (stock * float) list -> (string * float * float) list
 (** [portfolio port] is a list of each ticker with its associated average price
     and quantity of shares from the account's portfolio. Example: portfolio
@@ -63,3 +83,5 @@ val port_to_string : (stock * float) list -> string
     is \{(AAPL,125.0,3.0), (META,175.0,2.0)\} *)
 
 val only_stocks : account -> string list
+
+(** Returns only the stocks in an account. *)
