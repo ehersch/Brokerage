@@ -6,6 +6,9 @@ type command =
   | Buy of (string * float)
   | Sell of (string * float)
   | View of string
+  | Watchlist
+  | WatchlistAdd of string
+  | WatchlistRemove of string
   | Quit
   | Help
 
@@ -39,6 +42,9 @@ let parse str =
   | [ "-help" ] -> Help
   | [ "-quit" ] -> Quit
   | "-view" :: [ ticker ] -> View ticker
+  | [ "-watchlist" ] -> Watchlist
+  | "-watchlist" :: "add" :: [ ticker ] -> WatchlistAdd ticker
+  | "-watchlist" :: "remove" :: [ ticker ] -> WatchlistRemove ticker
   | [ _ ] -> raise Invalid
   | _ :: tl -> raise Invalid
   | [] -> raise Empty

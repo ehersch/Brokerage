@@ -55,6 +55,7 @@ let sell shares ticker acc =
           order
             (({ Account.ticker; Account.price = 0. -. price }, shares)
             :: acc.portfolio);
+        Account.watchlist = acc.watchlist;
       }
     else raise (NotOwned ticker)
   with

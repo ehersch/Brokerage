@@ -8,6 +8,9 @@ type command =
   | Buy of (string * float)
   | Sell of (string * float)
   | View of string
+  | Watchlist
+  | WatchlistAdd of string
+  | WatchlistRemove of string
   | Quit
   | Help
 

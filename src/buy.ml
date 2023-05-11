@@ -45,6 +45,7 @@ let buy shares ticker acc =
         Account.stock_balance = acc.stock_balance +. (shares *. price);
         Account.cash_balance = liquid;
         Account.portfolio = order (({ ticker; price }, shares) :: acc.portfolio);
+        Account.watchlist = acc.watchlist;
       }
   with
   | Broke -> raise Broke
