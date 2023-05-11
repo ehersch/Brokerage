@@ -15,7 +15,7 @@ type account = {
   cash_balance : float;
   portfolio : (stock * float) list;
   transaction_log : transaction list;
-  watchlist : stock list;
+  watchlist : (stock * float) list;
 }
 
 and transaction = {
@@ -99,12 +99,12 @@ let add_watchlist ticker acc =
     let price2 = Stocks.get_ticker_price ticker in
     let rec check watchlist tic =
       match watchlist with
-      | [] -> [ { ticker = tic; price = price2 } ]
-      | { ticker = t1; price = p1 } :: t ->
+      | [] -> [ ({ ticker = tic; price = price2 }, price2) ]
+      | ({ ticker = t1; price = p1 }, p2) :: t ->
           if t1 = tic then
             let new_stock = { ticker = t1; price = price2 } in
-            new_stock :: t
-          else { ticker = t1; price = p1 } :: check t tic
+            (new_stock, price2) :: t
+          else ({ ticker = t1; price = p1 }, p2) :: check t tic
     in
 
     let new_watch = check acc.watchlist ticker in
@@ -124,8 +124,9 @@ let remove_watchlist ticker acc =
     let rec check watchlist tic =
       match watchlist with
       | [] -> []
-      | { ticker = t1; price = p1 } :: t ->
-          if t1 = tic then t else { ticker = t1; price = p1 } :: check t tic
+      | ({ ticker = t1; price = p1 }, p2) :: t ->
+          if t1 = tic then t
+          else ({ ticker = t1; price = p1 }, p2) :: check t tic
     in
 
     let new_watch = check acc.watchlist ticker in
@@ -143,9 +144,11 @@ let remove_watchlist ticker acc =
 let watch_to_string list =
   let rec to_string = function
     | [] -> ""
-    | { ticker = t; price = p } :: t2 ->
-        "(ticker = " ^ t ^ ", " ^ "average price = " ^ string_of_float p ^ ") "
-        ^ "\n" ^ to_string t2
+    | ({ ticker = t; price = p }, p2) :: t2 ->
+        let new_price = Stocks.get_ticker_price t in
+        "(ticker = " ^ t ^ ", " ^ "price added at = " ^ string_of_float p ^ ", "
+        ^ "current price = " ^ string_of_float new_price ^ ") " ^ "\n"
+        ^ to_string t2
   in
   let list_text = to_string list in
   "{ " ^ list_text ^ "}"

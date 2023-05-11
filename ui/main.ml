@@ -46,6 +46,10 @@ let rec prompt_command (curr_acc : account) =
               prompt_command curr_acc
           | Buy.NoSuchStock _ ->
               print_endline "This stock does not exist. Try again.";
+              prompt_command curr_acc
+          | _ ->
+              print_endline
+                " Please enter a valid number of shares to purchase.";
               prompt_command curr_acc)
         else
           ANSITerminal.print_string [ ANSITerminal.yellow ]
@@ -76,11 +80,14 @@ let rec prompt_command (curr_acc : account) =
                   account. \n\
                  \    Try again with a valid sale.");
               prompt_command curr_acc
-          | NoSuchStock _ ->
+          | Sell.NoSuchStock _ ->
               print_endline "This stock does not exist. Try again.";
               prompt_command curr_acc
-          | NotOwned _ ->
+          | Sell.NotOwned _ ->
               print_endline "You do not own any shares of this stock.";
+              prompt_command curr_acc
+          | _ ->
+              print_endline "Please enter a valid number of shares to sell.";
               prompt_command curr_acc)
         else
           ANSITerminal.print_string [ ANSITerminal.yellow ]
@@ -143,7 +150,7 @@ let rec prompt_command (curr_acc : account) =
                      ("Put Price: " ^ string_of_float put_price);
                    put_price));
           prompt_command curr_acc
-        with NoSuchStock _ ->
+        with Stocks.NoSuchStock _ ->
           ANSITerminal.print_string [ ANSITerminal.red ]
             "This stock does not exist. Try again";
           prompt_command curr_acc)
@@ -215,16 +222,20 @@ let rec prompt_command (curr_acc : account) =
             ANSITerminal.print_string [ ANSITerminal.yellow ]
               "This stock does not exist. Try again";
             prompt_command curr_acc)
-    | Dep amt ->
-        if amt > 0.0 then (
-          ANSITerminal.print_string [ ANSITerminal.green ]
-            ("Successfully deposited : " ^ string_of_float amt ^ "\n");
-          let new_acc = deposit amt curr_acc in
-          prompt_command new_acc)
-        else
-          ANSITerminal.print_string [ ANSITerminal.red ]
-            "Error, you cannot deposit an amount less than $0.0 ";
-        prompt_command curr_acc
+    | Dep amt -> (
+        try
+          if amt > 0.0 then (
+            ANSITerminal.print_string [ ANSITerminal.green ]
+              ("Successfully deposited : " ^ string_of_float amt ^ "\n");
+            let new_acc = deposit amt curr_acc in
+            prompt_command new_acc)
+          else
+            ANSITerminal.print_string [ ANSITerminal.red ]
+              "Error, you cannot deposit an amount less than $0.0 ";
+          prompt_command curr_acc
+        with exc ->
+          print_endline "Please enter a valid amount to deposit.";
+          prompt_command curr_acc)
     | Bal ->
         ANSITerminal.print_string [ ANSITerminal.cyan ]
           ("Your current balance (cash and stock worth combined) is: "
@@ -244,17 +255,13 @@ let rec prompt_command (curr_acc : account) =
           \      \n\
            -bal\n\
           \      \n\
-           -equity\n\n\
+           -equity\n\
           \                \n\
            -portfolio\n\
           \      \n\
            -dep [amt]\n\
           \      \n\
            -withdraw [amt]\n\
-          \      \n\
-           -help\n\
-          \      \n\
-           -quit\n\
           \      \n\
            -view [ticker]\n\
           \      \n\
@@ -272,7 +279,10 @@ let rec prompt_command (curr_acc : account) =
           \ \n\
            -watchlist add [ticker]\n\
           \      \n\
-           -watchlist remove [ticker]\n";
+           -watchlist remove [ticker]\n\
+          \ \n\
+           -help \n\n\
+           -quit\n";
         prompt_command curr_acc
     | Quit ->
         ANSITerminal.print_string [ ANSITerminal.green ]
@@ -318,7 +328,7 @@ let rec prompt_command (curr_acc : account) =
       print_endline "This stock does not exist. Try again.";
       prompt_command curr_acc
   | _ ->
-      print_endline "This stock does not exist. Try again.";
+      invalid_msg ();
       prompt_command curr_acc
 
 let aapl_stock = { ticker = "AAPL"; price = 135.0 }
