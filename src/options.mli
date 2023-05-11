@@ -40,11 +40,6 @@ val black_scholes_put : float -> float -> float -> float -> float -> float
     interest rate, and [sigma] is the volatility of the underlying asset.
     Returns the calculated put option price. *)
 
-val expiration_date_from_ticker : string -> Calendar.Date.t
-(** [expiration_date_from_ticker ticker] returns the expiration date of the
-    option contract as a Calendar.Date.t value. The input [ticker] should be a
-    string formatted as "O:AAPL230616C00150000". *)
-
 val time_to_expiration_years : string -> float
 (** [time_to_expiration_years ticker] returns the time to expiration in years
     for the given option ticker formatted as "O:AAPL230616C00150000". The

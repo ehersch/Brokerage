@@ -77,17 +77,31 @@ let compute_greeks s x t r sigma =
 
   (delta, gamma, vega, theta, rho)
 
-let expiration_date_from_ticker ticker =
-  let date_str = String.sub ticker 4 6 in
-  let year = int_of_string (String.sub date_str 0 2) + 2000 in
-  let month = int_of_string (String.sub date_str 2 2) in
-  let day = int_of_string (String.sub date_str 4 2) in
-  Calendar.Date.make year month day
+open Unix
+open Unix
 
-let time_to_expiration_years ticker =
-  let expiration_date = expiration_date_from_ticker ticker in
-  let today = Calendar.Date.today () in
-  let days_to_expiration = Calendar.Date.sub expiration_date today in
-  let days_diff = Calendar.Date.Period.nb_days days_to_expiration in
-  let days_in_year = 365.0 in
-  float days_diff /. days_in_year
+let time_to_expiration_years date_string =
+  let current_time = time () in
+  let current_tm = localtime current_time in
+  let current_year = current_tm.tm_year + 1900 in
+  let current_month = current_tm.tm_mon + 1 in
+  let current_day = current_tm.tm_mday in
+
+  let year = int_of_string (String.sub date_string 7 2) + 2000 in
+  let month = int_of_string (String.sub date_string 9 2) in
+  let day = int_of_string (String.sub date_string 10 2) in
+
+  let total_days = 365.0 in
+  (* assuming a non-leap year *)
+  let elapsed_days = float_of_int (day - current_day) in
+  let elapsed_months = float_of_int (month - current_month) in
+  let elapsed_years = float_of_int (year - current_year) in
+
+  let days_proportion = elapsed_days /. total_days in
+  let months_proportion = elapsed_months /. 12.0 in
+  let years_proportion = elapsed_years in
+
+  let total_proportion =
+    days_proportion +. months_proportion +. years_proportion
+  in
+  total_proportion

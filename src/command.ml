@@ -7,7 +7,7 @@ type command =
   | Buy of (string * float)
   | Sell of (string * float)
   | View of string
-  | ViewOption of string * string
+  | ViewOption of string
   | Watchlist
   | WatchlistAdd of string
   | WatchlistRemove of string
@@ -46,8 +46,7 @@ let parse str =
   | [ "-quit" ] -> Quit
   | [ "-history" ] -> History
   | "-view" :: [ ticker ] -> View ticker
-  | "-view_option" :: ticker :: [ type_of_option ] ->
-      ViewOption (ticker, type_of_option)
+  | "-view_option" :: [ ticker ] -> ViewOption ticker
   | [ "-watchlist" ] -> Watchlist
   | "-watchlist" :: "add" :: [ ticker ] -> WatchlistAdd ticker
   | "-watchlist" :: "remove" :: [ ticker ] -> WatchlistRemove ticker

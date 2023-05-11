@@ -3,7 +3,7 @@ open Options
 open Stocks
 
 let rec main num =
-  let test_options = true in
+  let test_options = false in
   if test_options = false then (
     try
       print_endline "\nEnter the ticker symbol of a stock: ";
@@ -26,7 +26,7 @@ let rec main num =
           "An error occurred while processing your request. Please try again.";
         main ())
   else
-    let ticker = "O:AAPL230616C00150000" in
+    let ticker = "O:EVRI240119C00002500" in
     let symbol, expiration_date, strike_price = get_option_contract ticker in
     let underlying_price = get_ticker_price symbol in
     let t = 30.0 /. 365.0 in

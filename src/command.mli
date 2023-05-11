@@ -9,7 +9,7 @@ type command =
   | Buy of (string * float)
   | Sell of (string * float)
   | View of string
-  | ViewOption of string * string
+  | ViewOption of string
   | Watchlist
   | WatchlistAdd of string
   | WatchlistRemove of string
