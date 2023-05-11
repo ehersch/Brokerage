@@ -1,7 +1,9 @@
 (** The command type represents the different types of commands a user can
     input. *)
+
 type command =
   | Bal
+  | Cash
   | Equity
   | Portfolio
   | Dep of float
@@ -13,6 +15,7 @@ type command =
   | Watchlist
   | WatchlistAdd of string
   | WatchlistRemove of string
+  | Cashflow
   | Quit
   | History
   | Help

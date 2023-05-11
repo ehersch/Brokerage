@@ -13,7 +13,7 @@ let to_string my_log =
           match Account.transaction_to_string_quint h with
           | a, b, c, d, e ->
               "Time: " ^ a ^ "; Action: " ^ b ^ "; Shares: " ^ c ^ "; Stock: "
-              ^ d ^ "; Price: " ^ e ^ " | " ^ to_string_helper t)
+              ^ d ^ "; Price: " ^ e ^ " \n " ^ to_string_helper t)
     in
 
     let cur_str = to_string_helper my_log in

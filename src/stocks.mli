@@ -1,6 +1,8 @@
 (** This module provides functions for retrieving stock prices from the Polygon
     API. *)
 
+open Account
+
 exception NoSuchStock of string
 (** Raised when this ticker symbol does not exist. *)
 
