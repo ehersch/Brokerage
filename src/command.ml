@@ -11,6 +11,7 @@ type command =
   | Watchlist
   | WatchlistAdd of string
   | WatchlistRemove of string
+  | Cashflow
   | Quit
   | History
   | Help
@@ -51,6 +52,7 @@ let parse str =
   | [ "-watchlist" ] -> Watchlist
   | "-watchlist" :: "add" :: [ ticker ] -> WatchlistAdd ticker
   | "-watchlist" :: "remove" :: [ ticker ] -> WatchlistRemove ticker
+  | [ "-cashflow" ] -> Cashflow
   | [ _ ] -> raise Invalid
   | _ :: tl -> raise Invalid
   | [] -> raise Empty

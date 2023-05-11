@@ -75,6 +75,7 @@ let sell shares ticker acc =
             }
             acc.transaction_log;
         Account.watchlist = acc.watchlist;
+        dep_with_log = acc.dep_with_log;
       }
     else raise (NotOwned ticker)
   with

@@ -16,6 +16,7 @@ type account = {
   portfolio : (stock * float) list;
   transaction_log : transaction list;
   watchlist : (stock * float) list;
+  dep_with_log : dep_with list;
 }
 
 and transaction = {
@@ -24,6 +25,38 @@ and transaction = {
   share : float;
   stock : stock;
 }
+
+and dep_with = {
+  ctime : string;
+  type_of : string;
+  amount : float;
+  prev_balance : float;
+}
+
+let create = []
+
+let cash_to_string_quad cash =
+  ( cash.ctime,
+    cash.type_of,
+    string_of_float cash.amount,
+    string_of_float cash.prev_balance )
+
+let dep_with_string log =
+  if List.length log = 0 then "[]"
+  else
+    let rec to_string_helper my_log_1 =
+      match my_log_1 with
+      | [] -> ""
+      | h :: t -> (
+          match cash_to_string_quad h with
+          | a, b, c, d ->
+              "Time: " ^ a ^ "; Type: " ^ b ^ "; Amount: " ^ c
+              ^ "; Previous balance: " ^ d ^ " \n " ^ to_string_helper t)
+    in
+
+    let cur_str = to_string_helper log in
+
+    "[" ^ String.sub cur_str 0 (String.length cur_str - 3) ^ "]"
 
 (** Converts the time into an easy-to-read month/day/year string format*)
 let convert_unix_time (t : float) : string =
@@ -36,6 +69,7 @@ let convert_unix_time (t : float) : string =
 let withdraw (amt : float) (acc : account) =
   let b1 = acc.stock_balance in
   let b2 = acc.cash_balance -. amt in
+  let b2' = acc.cash_balance in
   if amt > acc.cash_balance then raise Broke
   else
     {
@@ -44,17 +78,38 @@ let withdraw (amt : float) (acc : account) =
       portfolio = acc.portfolio;
       transaction_log = acc.transaction_log;
       watchlist = acc.watchlist;
+      dep_with_log =
+        (let dw1 =
+           {
+             ctime = convert_unix_time (time ());
+             type_of = "Withdrawal";
+             amount = amt;
+             prev_balance = b1 +. b2';
+           }
+         in
+         dw1 :: acc.dep_with_log);
     }
 
 let deposit (amt : float) (acc : account) =
   let b1 = acc.stock_balance in
   let b2 = acc.cash_balance +. amt in
+  let b2' = acc.cash_balance in
   {
     stock_balance = b1;
     cash_balance = b2;
     portfolio = acc.portfolio;
     transaction_log = acc.transaction_log;
     watchlist = acc.watchlist;
+    dep_with_log =
+      (let dw1 =
+         {
+           ctime = convert_unix_time (time ());
+           type_of = "Deposit";
+           amount = amt;
+           prev_balance = b1 +. b2';
+         }
+       in
+       dw1 :: acc.dep_with_log);
   }
 
 let stock_to_string_pair stk = (stk.ticker, string_of_float stk.price)
@@ -114,6 +169,7 @@ let add_watchlist ticker acc =
       portfolio = acc.portfolio;
       transaction_log = acc.transaction_log;
       watchlist = new_watch;
+      dep_with_log = acc.dep_with_log;
     }
   with exc -> raise (NoSuchStock ticker)
 
@@ -138,6 +194,7 @@ let remove_watchlist ticker acc =
         portfolio = acc.portfolio;
         transaction_log = acc.transaction_log;
         watchlist = new_watch;
+        dep_with_log = acc.dep_with_log;
       }
   with NoSuchStock ticker -> raise (NoSuchStock ticker)
 

@@ -247,6 +247,11 @@ let rec prompt_command (curr_acc : account) =
           ^ Account.stock_balance curr_acc
           ^ "\n");
         prompt_command curr_acc
+    | Cashflow ->
+        ANSITerminal.print_string [ ANSITerminal.yellow ]
+          "Here is your cashflow history: \n";
+        print_string (Account.dep_with_string curr_acc.dep_with_log);
+        prompt_command curr_acc
     (*Removed \n-view [ticker] feature from UI. Run separately in ./operate *)
     | Help ->
         ANSITerminal.print_string [ ANSITerminal.green ]
@@ -257,6 +262,8 @@ let rec prompt_command (curr_acc : account) =
           \      \n\
            -equity\n\
           \                \n\
+           -cashflow\n\
+          \      \n\
            -portfolio\n\
           \      \n\
            -dep [amt]\n\
@@ -341,6 +348,7 @@ let fresh_acc_example_preloaded_stocks =
     portfolio = [];
     transaction_log = Log.create;
     watchlist = [];
+    dep_with_log = Account.create;
   }
 
 (* new_user creates a new user within the UI and a gifted portfolio with some

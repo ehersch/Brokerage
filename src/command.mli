@@ -13,6 +13,7 @@ type command =
   | Watchlist
   | WatchlistAdd of string
   | WatchlistRemove of string
+  | Cashflow
   | Quit
   | History
   | Help

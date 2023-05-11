@@ -23,6 +23,7 @@ type account = {
   portfolio : (stock * float) list;
   transaction_log : transaction list;
   watchlist : (stock * float) list;
+  dep_with_log : dep_with list;
 }
 
 (** Type [account] contains the floats [stock_balance], [cash_balance] and the
@@ -40,6 +41,30 @@ and transaction = {
 (**Type [transaction] any transaction has a [time], [type_of_transaction],
    [share], and [stock] field. *)
 
+and dep_with = {
+  ctime : string;
+  type_of : string;
+  amount : float;
+  prev_balance : float;
+}
+
+(** Type [dep_with] keeps track of the time of a withdrawal or deposit, as well
+    as the amount and the balance. Let's call this a cashflow log. *)
+
+val create : dep_with list
+
+(** Makes a new, empty dep_with. *)
+
+val cash_to_string_quad : dep_with -> string * string * string * string
+
+(** [cash_to_string_quad cash] returns the 4-tuple of string values of the field
+    of a dep_with*)
+
+val dep_with_string : dep_with list -> string
+
+(** [to_string log] returns the string-like representation of a cashflow log.
+    Useful in printing*)
+
 (** Type [transaction] contains the floats [time] and [change] and the string
     [type_of_transaction]. *)
 
@@ -50,6 +75,9 @@ val stock_to_string_pair : stock -> string * string
 
 val transaction_to_string_quint :
   transaction -> string * string * string * string * string
+
+(** [transaction_to_string_quint trans] returns the 5-tuple of string values of
+    the field of a transaction*)
 
 val withdraw : float -> account -> account
 (** [withdraw amt acc] is a record with updated [stock_balance] and
