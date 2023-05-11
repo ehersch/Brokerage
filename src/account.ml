@@ -126,8 +126,9 @@ let transaction_to_string_quint trans =
         tick,
         pr )
 
-let balance acc = string_of_float (acc.stock_balance +. acc.cash_balance)
-let stock_balance acc = string_of_float acc.stock_balance
+let balance acc = acc.stock_balance +. acc.cash_balance
+let stock_balance acc = acc.stock_balance
+let cash_balance acc = acc.cash_balance
 
 let only_stocks (acc : account) =
   List.map (fun ({ ticker; price }, _) -> ticker) acc.portfolio

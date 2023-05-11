@@ -20,6 +20,11 @@ To view stock prices based on their ticker names
 dune build
 make view_stock
 
+To view documentation as HTML file
+```
+make doc
+make opendoc (then open index.html)
+
 **NOTE: This API limits only 5 calls per minute (for the free version). The system will not let you buy or sell too many stocks too soon.
 
 How to enter commands
@@ -33,6 +38,8 @@ You can buy whole stocks and fractional stocks. For example, "-buy aapl 1" and "
 Information about some less-obvious commands
 ```
 "-bal" is your cash and stock balance combined
+
+"-cash" is your cash balance
 
 "-equity" is the amount of money you have invested in stocks
 

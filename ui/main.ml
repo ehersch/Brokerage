@@ -239,12 +239,19 @@ let rec prompt_command (curr_acc : account) =
     | Bal ->
         ANSITerminal.print_string [ ANSITerminal.cyan ]
           ("Your current balance (cash and stock worth combined) is: "
-         ^ Account.balance curr_acc ^ "\n");
+          ^ string_of_float (Account.balance curr_acc)
+          ^ "\n");
+        prompt_command curr_acc
+    | Cash ->
+        ANSITerminal.print_string [ ANSITerminal.cyan ]
+          ("Your current balance (cash and stock worth combined) is: "
+          ^ string_of_float (Account.cash_balance curr_acc)
+          ^ "\n");
         prompt_command curr_acc
     | Equity ->
         ANSITerminal.print_string [ ANSITerminal.cyan ]
           ("Your current stock balance is: "
-          ^ Account.stock_balance curr_acc
+          ^ string_of_float (Account.stock_balance curr_acc)
           ^ "\n");
         prompt_command curr_acc
     | Cashflow ->
@@ -259,6 +266,8 @@ let rec prompt_command (curr_acc : account) =
            Available commands\n\
           \      \n\
            -bal\n\
+          \      \n\
+           -cash\n\
           \      \n\
            -equity\n\
           \                \n\

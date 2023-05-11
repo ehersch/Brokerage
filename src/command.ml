@@ -1,5 +1,6 @@
 type command =
   | Bal
+  | Cash
   | Equity
   | Portfolio
   | Dep of float
@@ -34,6 +35,7 @@ let parse str =
   in
   match split_str with
   | [ "-bal" ] -> Bal
+  | [ "-cash" ] -> Cash
   | [ "-equity" ] -> Equity
   | [ "-portfolio" ] -> Portfolio
   | "-dep" :: [ amt ] -> Dep (float_of_string amt)

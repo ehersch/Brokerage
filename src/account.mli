@@ -25,7 +25,6 @@ type account = {
   watchlist : (stock * float) list;
   dep_with_log : dep_with list;
 }
-
 (** Type [account] contains the floats [stock_balance], [cash_balance] and the
     set-like-list of stocks [portfolio] and how many shares owned. It
     additionally contains a list of transactions anf balances named
@@ -37,7 +36,6 @@ and transaction = {
   share : float;
   stock : stock;
 }
-
 (**Type [transaction] any transaction has a [time], [type_of_transaction],
    [share], and [stock] field. *)
 
@@ -47,35 +45,26 @@ and dep_with = {
   amount : float;
   prev_balance : float;
 }
-
 (** Type [dep_with] keeps track of the time of a withdrawal or deposit, as well
     as the amount and the balance. Let's call this a cashflow log. *)
 
 val create : dep_with list
-
 (** Makes a new, empty dep_with. *)
 
 val cash_to_string_quad : dep_with -> string * string * string * string
-
 (** [cash_to_string_quad cash] returns the 4-tuple of string values of the field
     of a dep_with*)
 
 val dep_with_string : dep_with list -> string
-
 (** [to_string log] returns the string-like representation of a cashflow log.
     Useful in printing*)
 
-(** Type [transaction] contains the floats [time] and [change] and the string
-    [type_of_transaction]. *)
-
 val stock_to_string_pair : stock -> string * string
-
 (** [stock_to_string_pair stk] returns the tuple of strings where the first
     element is the ticker and the second element is the price*)
 
 val transaction_to_string_quint :
   transaction -> string * string * string * string * string
-
 (** [transaction_to_string_quint trans] returns the 5-tuple of string values of
     the field of a transaction*)
 
@@ -95,13 +84,16 @@ val deposit : float -> account -> account
     cash_balance = 1200.0. If the deposit amount is 0.0, the function will
     return an account with the same cash_balance.*)
 
-val balance : account -> string
-(** [balance acc] is the cash and stock balance of [acc] in a string form.
-    Example: balance \{stock_balance = 500.0; cash_balance = 500.0 ; portfolio =
-    []\} is "500.0"*)
+val balance : account -> float
+(** [balance acc] is the cash and stock balance of [acc] in float form. Example:
+    balance \{stock_balance = 500.0; cash_balance = 500.0 ; portfolio = []\} is
+    500.*)
 
-val stock_balance : account -> string
-(** [stock_balance acc] is the stock balance of the account in string form. *)
+val stock_balance : account -> float
+(** [stock_balance acc] is the stock balance of the account as a float. *)
+
+val cash_balance : account -> float
+(** [cash_balance acc] is the cash balance of the account as a float. *)
 
 val portfolio : (stock * float) list -> (string * float * float) list
 (** [portfolio port] is a list of each ticker with its associated average price
@@ -116,8 +108,8 @@ val port_to_string : (stock * float) list -> string
     is \{(AAPL,125.0,3.0), (META,175.0,2.0)\} *)
 
 val only_stocks : account -> string list
-
 (** Returns only the stocks in an account. *)
+
 val add_watchlist : string -> account -> account
 (** [add_watchlist ticker acc] adds the selected ticker and its current price
     into the account's watchlist or doesn't change the account's watchlist if
