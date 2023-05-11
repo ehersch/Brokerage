@@ -7,12 +7,14 @@ type command =
   | Buy of (string * float)
   | Sell of (string * float)
   | View of string
+  | ViewOption of string * string
   | Watchlist
   | WatchlistAdd of string
   | WatchlistRemove of string
   | Quit
   | History
   | Help
+  | OptionsTickerHelp
 
 exception Invalid
 exception Empty
@@ -34,18 +36,18 @@ let parse str =
   | [ "-equity" ] -> Equity
   | [ "-portfolio" ] -> Portfolio
   | "-dep" :: [ amt ] -> Dep (float_of_string amt)
-  | "-withdraw" :: [ amt ] ->
-      Withdraw (float_of_string amt)
-      (* | "-view" :: [ ticker ] -> View ticker *)
-      (*Feature disabled temporarily for UI*)
+  | "-withdraw" :: [ amt ] -> Withdraw (float_of_string amt)
   | "-buy" :: ticker :: [ num_shares ] ->
       Buy (String.uppercase_ascii ticker, float_of_string num_shares)
   | "-sell" :: ticker :: [ num_shares ] ->
       Sell (String.uppercase_ascii ticker, float_of_string num_shares)
   | [ "-help" ] -> Help
+  | [ "-options_ticker_help" ] -> OptionsTickerHelp
   | [ "-quit" ] -> Quit
   | [ "-history" ] -> History
   | "-view" :: [ ticker ] -> View ticker
+  | "-view_option" :: ticker :: [ type_of_option ] ->
+      ViewOption (ticker, type_of_option)
   | [ "-watchlist" ] -> Watchlist
   | "-watchlist" :: "add" :: [ ticker ] -> WatchlistAdd ticker
   | "-watchlist" :: "remove" :: [ ticker ] -> WatchlistRemove ticker

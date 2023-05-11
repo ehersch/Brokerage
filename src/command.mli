@@ -9,12 +9,14 @@ type command =
   | Buy of (string * float)
   | Sell of (string * float)
   | View of string
+  | ViewOption of string * string
   | Watchlist
   | WatchlistAdd of string
   | WatchlistRemove of string
   | Quit
   | History
   | Help
+  | OptionsTickerHelp
 
 exception Invalid
 (** Raised when a command is not valid*)

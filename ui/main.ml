@@ -1,5 +1,6 @@
 open Brokerage
 open Stocks
+open Options
 open Command
 open Account
 open Buy
@@ -97,6 +98,75 @@ let rec prompt_command (curr_acc : account) =
           ANSITerminal.print_string [ ANSITerminal.red ]
             "This stock does not exist. Try again";
           prompt_command curr_acc)
+    | ViewOption (ticker, type_of_option) -> (
+        try
+          print_endline
+            ("Price for " ^ ticker ^ ": "
+            ^ string_of_float
+                (let interest_rate = 0.02 in
+                 let volatility = 0.25 in
+
+                 let symbol, expiration_date, strike_price =
+                   get_option_contract ticker
+                 in
+                 let time_to_expiration = time_to_expiration_years ticker in
+                 let underlying_price = get_ticker_price symbol in
+                 let delta, gamma, vega, theta, rho =
+                   compute_greeks underlying_price strike_price
+                     time_to_expiration interest_rate volatility
+                 in
+
+                 ANSITerminal.print_string [ ANSITerminal.yellow ]
+                   ("Option Contract: " ^ symbol);
+                 Printf.printf "Expiration Date: %s\n" expiration_date;
+                 Printf.printf "Strike Price: %f\n" strike_price;
+                 ANSITerminal.print_string [ ANSITerminal.yellow ] "Greeks:\n";
+                 Printf.printf "  Delta: %f\n" delta;
+                 Printf.printf "  Gamma: %f\n" gamma;
+                 Printf.printf "  Vega: %f\n" vega;
+                 Printf.printf "  Theta: %f\n" theta;
+                 Printf.printf "  Rho: %f\n" rho;
+                 if String.lowercase_ascii type_of_option = "call" then (
+                   let call_price =
+                     black_scholes_call underlying_price strike_price
+                       time_to_expiration interest_rate volatility
+                   in
+                   ANSITerminal.print_string [ ANSITerminal.green ]
+                     ("Call Price: " ^ string_of_float call_price);
+                   call_price)
+                 else
+                   let put_price =
+                     black_scholes_put underlying_price strike_price
+                       time_to_expiration interest_rate volatility
+                   in
+                   ANSITerminal.print_string [ ANSITerminal.red ]
+                     ("Put Price: " ^ string_of_float put_price);
+                   put_price));
+          prompt_command curr_acc
+        with NoSuchStock _ ->
+          ANSITerminal.print_string [ ANSITerminal.red ]
+            "This stock does not exist. Try again";
+          prompt_command curr_acc)
+    | OptionsTickerHelp ->
+        ANSITerminal.print_string [ ANSITerminal.blue ]
+          "\n\
+           How To Call An Options Ticker\n\
+          \          \n\
+           To help illustrate how to read an options ticker, take a look at \
+           the following example (O:EVRI240119C00002500)\n\
+          \          \n\
+          \          A January 19th, 2024 Call Option for EVRI with a $2.50 \
+           Strike Price\n\
+          \          \n\
+          \          O:EVRI240119C00002500 = EVRI + 240119 + C + 00002500\n\
+          \          \n\
+          \          Underlying Stock - EVRI\n\
+          \          Expiration Date - January 19th, 2024 or ‘240119’ (YYMMDD)\n\
+          \          Option Type - Call or ‘C’\n\
+          \          Strike Price - 00002500 (2500/1000) or $2.50\n\
+          \          \n\
+          \      ";
+        prompt_command curr_acc
     | Portfolio ->
         ANSITerminal.print_string [ ANSITerminal.yellow ]
           "Here are all the stocks you own, their price, and your shares: \n";
@@ -174,8 +244,8 @@ let rec prompt_command (curr_acc : account) =
           \      \n\
            -bal\n\
           \      \n\
-           -equity\n\
-          \      \n\
+           -equity\n\n\
+          \                \n\
            -portfolio\n\
           \      \n\
            -dep [amt]\n\
@@ -187,6 +257,10 @@ let rec prompt_command (curr_acc : account) =
            -quit\n\
           \      \n\
            -view [ticker]\n\
+          \      \n\
+           -view_option [ticker]\n\
+          \      \n\
+           -options_ticker_help\n\
           \                          \n\
            -buy [ticker] [number of shares]\n\
           \      \n\
@@ -198,7 +272,7 @@ let rec prompt_command (curr_acc : account) =
           \ \n\
            -watchlist add [ticker]\n\
           \      \n\
-           -watchlist remove [ticker]";
+           -watchlist remove [ticker]\n";
         prompt_command curr_acc
     | Quit ->
         ANSITerminal.print_string [ ANSITerminal.green ]
