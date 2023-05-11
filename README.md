@@ -19,6 +19,51 @@ To view stock prices based on their ticker names
 ```
 dune build
 make view_stock
+
+**NOTE: This API limits only 5 calls per minute (for the free version). The system will not let you buy or sell too many stocks too soon.
+
+How to enter commands
 ```
+Capitalization matters for the commands. For example, "-HELP" is invalid while "-help" is valid.
+Capitalization does NOT matter for stock ticker symboles. For example "-view AAPL" and "-view aapl" both work.
+You can deposit integer and float values. For example, "-deposit 1000" and "-deposit 3.5" both work.
+You can buy whole stocks and fractional stocks. For example, "-buy aapl 1" and "-buy .5" both work.
+
+
+Information about some less-obvious commands
+```
+"-bal" is your cash and stock balance combined
+
+"-equity" is the amount of money you have invested in stocks
+
+"-cashflow" gives a cashflow-history log. The history of deposits and withdrawals
+
+"-portfolio" shows what stocks are in your portfolio (along with the amount and averge stock price)
+
+"-dep [amt]" deposit amt into your account
+
+"-withdraw [amt]" withdraw amt of cash
+
+"-view [ticker]" view the stock with symbol ticker
+
+"-view_option [ticker]" view the option with symbol ticker
+
+"-options_ticker_help" get some help understanding options
+
+"-buy [ticker] [number of shares]" buy a certain number of shares of ticker
+
+"-sell [ticker] [number of shares]" sell a certain number of shares of ticker
+
+"-history" see your transaction history. What you recently bought and solf
+
+"-watchlist" look out for the value of these stocks
+
+"-watchlist add [ticker]" add stock to your watchlist
+
+"-watchlist remove [ticker]" remove stock from your watchlist
+
+"-help" get some help
+
+"-quit" exit
 
 Final project for CS3110
