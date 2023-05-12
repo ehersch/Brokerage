@@ -15,7 +15,7 @@ dune build
 make play
 ```
 
-To view stock prices based on their ticker names
+Specialized tesing environment to fine-tune options and view stock parameters. To view stock prices based on their ticker names. Toggle boolean flag in operate/main.ml to test fine tuned greek parameters e.g. volatility, time to expiration for options pricings. 
 ```
 dune build
 make view_stock
@@ -61,7 +61,7 @@ Information about some less-obvious commands
 
 "-sell [ticker] [number of shares]" sell a certain number of shares of ticker
 
-"-history" see your transaction history. What you recently bought and solf
+"-history" see your transaction history. What you recently bought and sold
 
 "-watchlist" look out for the value of these stocks
 
@@ -72,5 +72,6 @@ Information about some less-obvious commands
 "-help" get some help
 
 "-quit" exit
+```
 
 Final project for CS3110
