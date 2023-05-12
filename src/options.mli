@@ -1,7 +1,6 @@
 (** This module provides functions for working with option contracts and pricing
     them using the Black-Scholes model. *)
 
-open Account
 open CalendarLib
 
 exception NoSuchOption of string
