@@ -19,8 +19,6 @@ Specialized tesing environment to fine-tune options and view stock parameters. T
 ```
 dune build
 make view_stock
-
-
 ```
 
 ## To view documentation as HTML file
