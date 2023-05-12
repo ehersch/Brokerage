@@ -1,5 +1,6 @@
 (** The command type represents the different types of commands a user can
     input. *)
+
 type command =
   | Bal
   | Equity
