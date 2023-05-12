@@ -1,29 +1,34 @@
 # **Brokerage Simulation**
-## Team Name: JAME Street
-
 
 **NetID and names:** Ethan Hersch esh87, Jerry Chen jwc279, Aarav Khanna ak2246, Mohammad Islam mai54
+**Team Name: JAME Street** 
 
 Install opam dependencies (should take a few minutes):
 ```
 opam install ppx_deriving tls-lwt cohttp cohttp-async cohttp-lwt cohttp-lwt-unix cohttp-lwt-jsoo cohttp-top lwt_ppx
 ```
 
-To use operate and try out the UI
+## To use operate and try out the UI of our brokerage
 ```
 dune build
 make play
 ```
 
+## Fine tuned stock viewing / options testing environment (not part of main UI/brokerage interface)
 Specialized tesing environment to fine-tune options and view stock parameters. To view stock prices based on their ticker names. Toggle boolean flag in operate/main.ml to test fine tuned greek parameters e.g. volatility, time to expiration for options pricings. 
 ```
 dune build
 make view_stock
 
-To view documentation as HTML file
+
+```
+
+## To view documentation as HTML file
+
 ```
 make doc
 make opendoc (then open index.html)
+```
 
 **NOTE: This API limits only 5 calls per minute (for the free version). The system will not let you buy or sell too many stocks too soon.**
 
@@ -74,4 +79,4 @@ You can buy whole stocks and fractional stocks. For example, "-buy aapl 1" and "
 "-quit" exit
 
 
-Final project for CS3110
+**Final project for CS3110 Spring 2023**
