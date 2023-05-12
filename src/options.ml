@@ -77,9 +77,6 @@ let compute_greeks s x t r sigma =
 
   (delta, gamma, vega, theta, rho)
 
-open Unix
-open Unix
-
 let time_to_expiration_years date_string =
   let current_time = time () in
   let current_tm = localtime current_time in

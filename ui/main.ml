@@ -134,21 +134,20 @@ let rec prompt_command (curr_acc : account) =
                  Printf.printf "  Gamma: %f\n" gamma;
                  Printf.printf "  Vega: %f\n" vega;
                  Printf.printf "  Theta: %f\n" theta;
-                 Printf.printf "  Rho: %f\n" rho;
                  Printf.printf "  Rho: %f\n\n" rho;
                  if String.lowercase_ascii (String.sub ticker 12 1) = "c" then
                    let call_price =
                      black_scholes_call underlying_price strike_price
                        time_to_expiration interest_rate volatility
                    in
+
                    call_price
                  else
                    let put_price =
                      black_scholes_put underlying_price strike_price
                        time_to_expiration interest_rate volatility
                    in
-                   ANSITerminal.print_string [ ANSITerminal.red ]
-                     ("Put Price: " ^ string_of_float put_price);
+
                    put_price));
           prompt_command curr_acc
         with Stocks.NoSuchStock _ ->
@@ -240,20 +239,27 @@ let rec prompt_command (curr_acc : account) =
     | Bal ->
         ANSITerminal.print_string [ ANSITerminal.cyan ]
           ("Your current balance (cash and stock worth combined) is: "
-         ^ Account.balance curr_acc ^ "\n");
+          ^ string_of_float (Account.balance curr_acc)
+          ^ "\n");
+        prompt_command curr_acc
+    | Cash ->
+        ANSITerminal.print_string [ ANSITerminal.cyan ]
+          ("Your current balance (cash and stock worth combined) is: "
+          ^ string_of_float (Account.cash_balance curr_acc)
+          ^ "\n");
         prompt_command curr_acc
     | Equity ->
         ANSITerminal.print_string [ ANSITerminal.cyan ]
           ("Your current stock balance is: "
-          ^ Account.stock_balance curr_acc
+          ^ string_of_float (Account.stock_balance curr_acc)
           ^ "\n");
         prompt_command curr_acc
-    (*Removed \n-view [ticker] feature from UI. Run separately in ./operate *)
     | Cashflow ->
         ANSITerminal.print_string [ ANSITerminal.yellow ]
           "Here is your cashflow history: \n";
         print_string (Account.dep_with_string curr_acc.dep_with_log);
         prompt_command curr_acc
+    (*Removed \n-view [ticker] feature from UI. Run separately in ./operate *)
     | Help ->
         ANSITerminal.print_string [ ANSITerminal.green ]
           "\n\
@@ -261,10 +267,12 @@ let rec prompt_command (curr_acc : account) =
           \      \n\
            -bal\n\
           \      \n\
+           -cash\n\
+          \      \n\
            -equity\n\
           \                \n\
            -cashflow\n\
-          \       \n\
+          \      \n\
            -portfolio\n\
           \      \n\
            -dep [amt]\n\
@@ -453,7 +461,7 @@ let rec age_check ans =
       ANSITerminal.print_string [ ANSITerminal.red ]
         "Unfortunately, our terms abide by federal law where users must be \
          atleast\n\
-         eighteen years old to access trading tools. Have a great day!\n"
+         eighteen years old to access trading tools. Have a great day!.\n"
   | _ ->
       print_endline "Please enter a valid command.";
       print_string "> ";

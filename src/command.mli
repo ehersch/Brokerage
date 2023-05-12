@@ -3,6 +3,7 @@
 
 type command =
   | Bal
+  | Cash
   | Equity
   | Portfolio
   | Dep of float
