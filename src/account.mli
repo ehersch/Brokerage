@@ -95,11 +95,11 @@ val stock_balance : account -> float
 val cash_balance : account -> float
 (** [cash_balance acc] is the cash balance of the account as a float. *)
 
-val portfolio : (stock * float) list -> (string * float * float) list
-(** [portfolio port] is a list of each ticker with its associated average price
-    and quantity of shares from the account's portfolio. Example: portfolio
-    \[\{ticker = AAPL; price = 125.0\} 3.0); (\{ticker = META; price = 175.0\},
-    2.0)\] is \[\["AAPL";"125.0";"3.0"\];\["META";"175.0";"2.0"\]\]*)
+val ret_portfolio : (stock * float) list -> (string * float * float) list
+(** [ret_portfolio port] is a list of each ticker with its associated average
+    price and quantity of shares from the account's portfolio. Example:
+    portfolio \[\{ticker = AAPL; price = 125.0\} 3.0); (\{ticker = META; price =
+    175.0\}, 2.0)\] is \[\["AAPL";"125.0";"3.0"\];\["META";"175.0";"2.0"\]\]*)
 
 val port_to_string : (stock * float) list -> string
 (** [port_to_string port] is a string representation of an account's portfolio.

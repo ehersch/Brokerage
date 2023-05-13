@@ -126,26 +126,35 @@ let transaction_to_string_quint trans =
         tick,
         pr )
 
+(** Calculates the current value of the portfolio [port]. *)
+let rec find_stock_balance port =
+  match port with
+  | [] -> 0.
+  | (stk, num) :: t ->
+      (Stocks.get_ticker_price stk.ticker *. num) +. find_stock_balance t
+
+let stock_balance acc = find_stock_balance acc.portfolio
 let balance acc = acc.stock_balance +. acc.cash_balance
-let stock_balance acc = acc.stock_balance
 let cash_balance acc = acc.cash_balance
 
 let only_stocks (acc : account) =
   List.map (fun ({ ticker; price }, _) -> ticker) acc.portfolio
 
-let rec portfolio (port : (stock * float) list) =
+let rec ret_portfolio (port : (stock * float) list) =
   match port with
   | [] -> []
-  | (h, q) :: t -> (h.ticker, h.price, q) :: portfolio t
+  | (h, q) :: t -> (h.ticker, h.price, q) :: ret_portfolio t
 
 let port_to_string port =
-  let full_port = portfolio port in
+  let full_port = ret_portfolio port in
   let rec to_string = function
     | [] -> ""
     | (ticker, price, q) :: t ->
-        "(ticker = " ^ ticker ^ ", " ^ "average price = "
-        ^ string_of_float price ^ ", " ^ "number of shares = "
-        ^ string_of_float q ^ ") " ^ "\n" ^ to_string t
+        "(ticker = " ^ ticker ^ ", " ^ "average purchase price = "
+        ^ string_of_float price ^ " current price = "
+        ^ string_of_float (Stocks.get_ticker_price ticker)
+        ^ ", " ^ "number of shares = " ^ string_of_float q ^ ") " ^ "\n"
+        ^ to_string t
   in
   let list_text = to_string full_port in
   "{ " ^ list_text ^ "}"

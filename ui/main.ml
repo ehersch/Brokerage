@@ -15,6 +15,12 @@ let invalid_msg () =
 (* terms lets the user decide on whether or not they agree to the terms and
    conditions in order to keep using our services*)
 
+(** First element of (a,b).*)
+let fst (a, b) = a
+
+(** Second element of (a,b).*)
+let snd (a, b) = b
+
 let rec prompt_command (curr_acc : account) =
   ANSITerminal.print_string [ ANSITerminal.red ]
     "\nPlease enter a command. Type -help to view all valid commands\n";
@@ -69,9 +75,11 @@ let rec prompt_command (curr_acc : account) =
             ANSITerminal.print_string [ ANSITerminal.green ]
               ("You have successfully sold " ^ string_of_float num_shares
              ^ " shares of " ^ ticker);
-            print_endline "\n Here \n          is your updated portfolio";
-            print_endline (port_to_string new_acc.portfolio);
-            prompt_command new_acc
+            print_endline "\n Here is your updated portfolio";
+            print_endline (port_to_string (fst new_acc).portfolio);
+            print_endline
+              ("Profit on transaction " ^ string_of_float (snd new_acc));
+            prompt_command (fst new_acc)
           with
           | Broke ->
               ANSITerminal.print_string [ ANSITerminal.magenta ]
@@ -152,7 +160,8 @@ let rec prompt_command (curr_acc : account) =
           prompt_command curr_acc
         with Stocks.NoSuchStock _ ->
           ANSITerminal.print_string [ ANSITerminal.red ]
-            "This option does not exist. Try again";
+            "This option does not exist. Try again running \
+             -options_ticker_help to see how to input an options ticker";
           prompt_command curr_acc)
     | OptionsTickerHelp ->
         ANSITerminal.print_string [ ANSITerminal.blue ]
@@ -160,7 +169,8 @@ let rec prompt_command (curr_acc : account) =
            How To Call An Options Ticker\n\
           \          \n\
            To help illustrate how to read an options ticker, take a look at \
-           the following example (O:EVRI240119C00002500)\n\
+           the following example (O:EVRI240119C00002500). This is how you \
+           properly call an option \n\
           \          \n\
           \          A January 19th, 2024 Call Option for EVRI with a $2.50 \
            Strike Price\n\

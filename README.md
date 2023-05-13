@@ -56,7 +56,7 @@ You can buy whole stocks and fractional stocks. For example, "-buy aapl 1" and "
 
 "-view [ticker]" view the stock with symbol ticker
 
-"-view_option [ticker]" view the option with symbol ticker
+"-view_option [ticker]" view the option with symbol ticker. Look at -options_ticker_help to see how to properly format an options ticker.
 
 "-options_ticker_help" get some help understanding options
 
