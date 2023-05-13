@@ -18,7 +18,7 @@ val order : (Account.stock * float) list -> (Account.stock * float) list
     ticker symbol and with any entries for the same ticker symbol combined into
     a single entry. *)
 
-val sell : float -> string -> Account.account -> Account.account
+val sell : float -> string -> Account.account -> Account.account * float
 (** [sell shares ticker acc] sells [shares] shares of stock with the given
     [ticker] at the current market price and updates the given account [acc]
     with the resulting changes. It returns the float of the amount of money made

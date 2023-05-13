@@ -151,10 +151,8 @@ let port_to_string port =
     | [] -> ""
     | (ticker, price, q) :: t ->
         "(ticker = " ^ ticker ^ ", " ^ "average purchase price = "
-        ^ string_of_float price ^ " current price = "
-        ^ string_of_float (Stocks.get_ticker_price ticker)
-        ^ ", " ^ "number of shares = " ^ string_of_float q ^ ") " ^ "\n"
-        ^ to_string t
+        ^ string_of_float price ^ ", " ^ "number of shares = "
+        ^ string_of_float q ^ ") " ^ "\n" ^ to_string t
   in
   let list_text = to_string full_port in
   "{ " ^ list_text ^ "}"

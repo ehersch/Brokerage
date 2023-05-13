@@ -15,6 +15,12 @@ let invalid_msg () =
 (* terms lets the user decide on whether or not they agree to the terms and
    conditions in order to keep using our services*)
 
+(** Gets the first element of a pair. *)
+let fst (a, b) = a
+
+(** Gets the second element of a pair. *)
+let snd (a, b) = b
+
 let rec prompt_command (curr_acc : account) =
   ANSITerminal.print_string [ ANSITerminal.red ]
     "\nPlease enter a command. Type -help to view all valid commands\n";
@@ -45,7 +51,10 @@ let rec prompt_command (curr_acc : account) =
                  \      Try again with a valid purchase.");
               prompt_command curr_acc
           | Buy.NoSuchStock _ ->
-              print_endline "This stock does not exist. Try again.";
+              print_endline
+                "This stock does not exist. Try again. Note our API (free \
+                 version) can only handle 5 calls per minute, so this can also \
+                 be an API call overload. ";
               prompt_command curr_acc
           | _ ->
               print_endline
@@ -69,9 +78,20 @@ let rec prompt_command (curr_acc : account) =
             ANSITerminal.print_string [ ANSITerminal.green ]
               ("You have successfully sold " ^ string_of_float num_shares
              ^ " shares of " ^ ticker);
-            print_endline "\n Here \n          is your updated portfolio";
-            print_endline (port_to_string new_acc.portfolio);
-            prompt_command new_acc
+            print_endline "\n Here is your updated portfolio";
+            print_endline (port_to_string (fst new_acc).portfolio);
+            if snd new_acc > 0. then
+              print_endline
+                ("\n Your profit from the sale: "
+                ^ string_of_float (snd new_acc))
+            else if snd new_acc < 0. then
+              print_endline
+                ("\n\
+                 \ Your loss profit (or negative if you sold for a loss) from \
+                  the sale: "
+                ^ string_of_float (0. -. snd new_acc))
+            else if snd new_acc = 0. then print_endline "\n Your broke even.";
+            prompt_command (fst new_acc)
           with
           | Broke ->
               ANSITerminal.print_string [ ANSITerminal.magenta ]
@@ -81,7 +101,10 @@ let rec prompt_command (curr_acc : account) =
                  \    Try again with a valid sale.");
               prompt_command curr_acc
           | Sell.NoSuchStock _ ->
-              print_endline "This stock does not exist. Try again.";
+              print_endline
+                "This stock does not exist. Try again. Note our API (free \
+                 version) can only handle 5 calls per minute, so this can also \
+                 be an API call overload. ";
               prompt_command curr_acc
           | Sell.NotOwned _ ->
               print_endline "You do not own any shares of this stock.";
@@ -103,7 +126,9 @@ let rec prompt_command (curr_acc : account) =
           prompt_command curr_acc
         with NoSuchStock _ ->
           ANSITerminal.print_string [ ANSITerminal.red ]
-            "This stock does not exist. Try again";
+            "This stock does not exist. Try again. Note our API (free version) \
+             can only handle 5 calls per minute, so this can also be an API \
+             call overload. ";
           prompt_command curr_acc)
     | ViewOption ticker -> (
         try
@@ -199,7 +224,9 @@ let rec prompt_command (curr_acc : account) =
           prompt_command new_acc
         with Stocks.NoSuchStock _ ->
           ANSITerminal.print_string [ ANSITerminal.yellow ]
-            "This stock does not exist. Try again";
+            "This stock does not exist. Try again. Note our API (free version) \
+             can only handle 5 calls per minute, so this can also be an API \
+             call overload. ";
           prompt_command curr_acc)
     | WatchlistRemove ticker -> (
         try
@@ -222,7 +249,9 @@ let rec prompt_command (curr_acc : account) =
             prompt_command curr_acc
         | Stocks.NoSuchStock _ ->
             ANSITerminal.print_string [ ANSITerminal.yellow ]
-              "This stock does not exist. Try again";
+              "This stock does not exist. Try again. Note our API (free \
+               version) can only handle 5 calls per minute, so this can also \
+               be an API call overload. ";
             prompt_command curr_acc)
     | Dep amt -> (
         try
@@ -343,7 +372,10 @@ let rec prompt_command (curr_acc : account) =
       invalid_msg ();
       prompt_command curr_acc
   | NoSuchStock _ ->
-      print_endline "This stock does not exist. Try again.";
+      print_endline
+        "This stock does not exist. Try again. Note our API (free version) can \
+         only handle 5 calls per minute, so this can also be an API call \
+         overload. ";
       prompt_command curr_acc
   | _ ->
       invalid_msg ();

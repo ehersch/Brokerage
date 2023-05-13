@@ -3,6 +3,8 @@
 **NetID and names:** Ethan Hersch esh87, Jerry Chen jwc279, Aarav Khanna ak2246, Mohammad Islam mai54
 **Team Name: JAME Street** 
 
+**NOTE: This API limits only 5 calls per minute (for the free version). The system will not let you buy or sell too many stocks too soon.**
+
 Install opam dependencies (should take a few minutes):
 ```
 opam install ppx_deriving tls-lwt cohttp cohttp-async cohttp-lwt cohttp-lwt-unix cohttp-lwt-jsoo cohttp-top lwt_ppx
@@ -27,8 +29,6 @@ make view_stock
 make doc
 make opendoc (then open index.html)
 ```
-
-**NOTE: This API limits only 5 calls per minute (for the free version). The system will not let you buy or sell too many stocks too soon.**
 
 ## How to enter commands
 

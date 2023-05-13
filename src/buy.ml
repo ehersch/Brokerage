@@ -61,7 +61,7 @@ let buy shares ticker acc =
               time = convert_unix_time (time ());
               type_of_transaction = "Buy";
               share = shares;
-              stock = { ticker; price = Stocks.get_ticker_price ticker };
+              stock = { ticker; price };
             }
             acc.transaction_log;
         Account.watchlist = acc.watchlist;
