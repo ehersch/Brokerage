@@ -54,40 +54,30 @@ let convert_unix_time (t : float) : string =
   let year = string_of_int (tm.tm_year + 1900) in
   day ^ "/" ^ month ^ "/" ^ year
 
-(** Finds the original price of [stock] in portfolio [port]*)
-let rec orig_price stock port =
-  match port with
-  | [] -> raise (NotOwned stock)
-  | (tick, price) :: t ->
-      if String.uppercase_ascii tick.ticker = String.uppercase_ascii stock then
-        price
-      else orig_price stock t
-
 let sell shares ticker acc =
   try
     let price = Stocks.get_ticker_price ticker in
     if contains_ticker (Account.only_stocks acc) ticker then
       let liquid = (Account.deposit (shares *. price) acc).cash_balance in
-      ( {
-          Account.stock_balance = acc.stock_balance -. (shares *. price);
-          Account.cash_balance = liquid;
-          Account.portfolio =
-            order
-              (({ Account.ticker; Account.price = 0. -. price }, shares)
-              :: acc.portfolio);
-          Account.transaction_log =
-            Log.add
-              {
-                time = convert_unix_time (time ());
-                type_of_transaction = "Sell";
-                share = shares;
-                stock = { ticker; price = Stocks.get_ticker_price ticker };
-              }
-              acc.transaction_log;
-          Account.watchlist = acc.watchlist;
-          dep_with_log = acc.dep_with_log;
-        },
-        shares *. (price -. orig_price ticker acc.portfolio) )
+      {
+        Account.stock_balance = acc.stock_balance -. (shares *. price);
+        Account.cash_balance = liquid +. (shares *. price);
+        Account.portfolio =
+          order
+            (({ Account.ticker; Account.price = 0. -. price }, shares)
+            :: acc.portfolio);
+        Account.transaction_log =
+          Log.add
+            {
+              time = convert_unix_time (time ());
+              type_of_transaction = "Sell";
+              share = shares;
+              stock = { ticker; price = Stocks.get_ticker_price ticker };
+            }
+            acc.transaction_log;
+        Account.watchlist = acc.watchlist;
+        dep_with_log = acc.dep_with_log;
+      }
     else raise (NotOwned ticker)
   with
   | Broke -> raise Broke

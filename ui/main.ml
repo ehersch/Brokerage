@@ -15,12 +15,6 @@ let invalid_msg () =
 (* terms lets the user decide on whether or not they agree to the terms and
    conditions in order to keep using our services*)
 
-(** First element of (a,b).*)
-let fst (a, b) = a
-
-(** Second element of (a,b).*)
-let snd (a, b) = b
-
 let rec prompt_command (curr_acc : account) =
   ANSITerminal.print_string [ ANSITerminal.red ]
     "\nPlease enter a command. Type -help to view all valid commands\n";
@@ -75,11 +69,9 @@ let rec prompt_command (curr_acc : account) =
             ANSITerminal.print_string [ ANSITerminal.green ]
               ("You have successfully sold " ^ string_of_float num_shares
              ^ " shares of " ^ ticker);
-            print_endline "\n Here is your updated portfolio";
-            print_endline (port_to_string (fst new_acc).portfolio);
-            print_endline
-              ("Profit on transaction " ^ string_of_float (snd new_acc));
-            prompt_command (fst new_acc)
+            print_endline "\n Here \n          is your updated portfolio";
+            print_endline (port_to_string new_acc.portfolio);
+            prompt_command new_acc
           with
           | Broke ->
               ANSITerminal.print_string [ ANSITerminal.magenta ]
