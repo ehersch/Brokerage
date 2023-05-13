@@ -105,42 +105,43 @@ let rec prompt_command (curr_acc : account) =
           ANSITerminal.print_string [ ANSITerminal.red ]
             "This stock does not exist. Try again";
           prompt_command curr_acc)
-    | ViewOption (ticker, type_of_option) -> (
+    | ViewOption ticker -> (
         try
-          print_endline
-            ("Price for " ^ ticker ^ ": "
+          ANSITerminal.print_string [ ANSITerminal.green ]
+            ("\nPrice: "
             ^ string_of_float
                 (let interest_rate = 0.02 in
                  let volatility = 0.25 in
-
                  let symbol, expiration_date, strike_price =
                    get_option_contract ticker
                  in
-                 let time_to_expiration = time_to_expiration_years ticker in
                  let underlying_price = get_ticker_price symbol in
+                 let time_to_expiration = time_to_expiration_years ticker in
                  let delta, gamma, vega, theta, rho =
                    compute_greeks underlying_price strike_price
                      time_to_expiration interest_rate volatility
                  in
 
                  ANSITerminal.print_string [ ANSITerminal.yellow ]
-                   ("Option Contract: " ^ symbol);
-                 Printf.printf "Expiration Date: %s\n" expiration_date;
-                 Printf.printf "Strike Price: %f\n" strike_price;
-                 ANSITerminal.print_string [ ANSITerminal.yellow ] "Greeks:\n";
+                   ("\nOption Contract: " ^ symbol);
+                 ANSITerminal.print_string [ ANSITerminal.red ]
+                   ("\n\nExpiration Date: " ^ expiration_date);
+                 ANSITerminal.print_string [ ANSITerminal.red ]
+                   ("\nStrike price: " ^ string_of_float strike_price);
+                 ANSITerminal.print_string [ ANSITerminal.green ]
+                   "\n\nGreeks:\n";
                  Printf.printf "  Delta: %f\n" delta;
                  Printf.printf "  Gamma: %f\n" gamma;
                  Printf.printf "  Vega: %f\n" vega;
                  Printf.printf "  Theta: %f\n" theta;
                  Printf.printf "  Rho: %f\n" rho;
-                 if String.lowercase_ascii type_of_option = "call" then (
+                 Printf.printf "  Rho: %f\n\n" rho;
+                 if String.lowercase_ascii (String.sub ticker 12 1) = "c" then
                    let call_price =
                      black_scholes_call underlying_price strike_price
                        time_to_expiration interest_rate volatility
                    in
-                   ANSITerminal.print_string [ ANSITerminal.green ]
-                     ("Call Price: " ^ string_of_float call_price);
-                   call_price)
+                   call_price
                  else
                    let put_price =
                      black_scholes_put underlying_price strike_price
@@ -152,7 +153,7 @@ let rec prompt_command (curr_acc : account) =
           prompt_command curr_acc
         with Stocks.NoSuchStock _ ->
           ANSITerminal.print_string [ ANSITerminal.red ]
-            "This stock does not exist. Try again";
+            "This option does not exist. Try again";
           prompt_command curr_acc)
     | OptionsTickerHelp ->
         ANSITerminal.print_string [ ANSITerminal.blue ]
@@ -248,6 +249,11 @@ let rec prompt_command (curr_acc : account) =
           ^ "\n");
         prompt_command curr_acc
     (*Removed \n-view [ticker] feature from UI. Run separately in ./operate *)
+    | Cashflow ->
+        ANSITerminal.print_string [ ANSITerminal.yellow ]
+          "Here is your cashflow history: \n";
+        print_string (Account.dep_with_string curr_acc.dep_with_log);
+        prompt_command curr_acc
     | Help ->
         ANSITerminal.print_string [ ANSITerminal.green ]
           "\n\
@@ -257,6 +263,8 @@ let rec prompt_command (curr_acc : account) =
           \      \n\
            -equity\n\
           \                \n\
+           -cashflow\n\
+          \       \n\
            -portfolio\n\
           \      \n\
            -dep [amt]\n\
@@ -341,6 +349,7 @@ let fresh_acc_example_preloaded_stocks =
     portfolio = [];
     transaction_log = Log.create;
     watchlist = [];
+    dep_with_log = Account.create;
   }
 
 (* new_user creates a new user within the UI and a gifted portfolio with some
@@ -444,7 +453,7 @@ let rec age_check ans =
       ANSITerminal.print_string [ ANSITerminal.red ]
         "Unfortunately, our terms abide by federal law where users must be \
          atleast\n\
-         eighteen years old to access trading tools. Have a great day!.\n"
+         eighteen years old to access trading tools. Have a great day!\n"
   | _ ->
       print_endline "Please enter a valid command.";
       print_string "> ";
