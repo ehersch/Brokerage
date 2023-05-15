@@ -12,8 +12,9 @@
     OUnit, while the Buy and Sell modules were mainly tested manually due to the
     5 API call limit, which made automatic testing challenging.
     buy_sell_error_tests, account_tests_live_data, and portfolio_tests had to be
-    commented out because they use live stock data, but they were in fact
-    tested.
+    removed from the final test suite because they use live stock data, but they
+    were in fact tested individually and the code is still in the various test
+    lists and can be run individually.
 
     The selection of testing methods (black box, glass box, randomized, etc.)
     was based on the specific requirements and nature of the module. For
