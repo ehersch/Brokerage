@@ -131,3 +131,45 @@ val watch_to_string : (stock * float) list -> string
     watchlist. Example: watchlist
     [({ticker = AAPL; price = 125.0}, 126.0); ({ticker = META; price = 175.0}, 163.0)]
     is \{(AAPL,125.0, 126.0), (META,175.0, 163.0)\}*)
+
+val find_portfolio_stock : string -> (stock * float) list -> float option
+(** [find_portfolio_stock ticker port] is the number of shares of the stock with
+    ticker symbol [ticker] in the portfolio [port]. If no such stock is found,
+    the function returns None. *)
+
+val update_portfolio_stock :
+  string -> float -> (stock * float) list -> (stock * float) list
+(** [update_portfolio_stock ticker num port] updates the number of shares of the
+    stock with ticker symbol [ticker] in the portfolio [port] to be [num]. If no
+    such stock is found, the portfolio is unchanged. *)
+
+val buy : float -> string -> account -> account
+(** [buy shares ticker acc] buys [shares] amount of the stock with ticker
+    [ticker] in the account [acc]. If the account does not have enough cash
+    balance for the purchase, the function raises the [Broke] exception. *)
+
+val sell : float -> string -> account -> account
+(** [sell shares ticker acc] sells [shares] amount of the stock with ticker
+    [ticker] from the account [acc]. If the account does not own enough shares
+    of the stock, the function raises the [Broke] exception. *)
+
+val portfolio_value : account -> float
+(** [portfolio_value acc] is the total value of the portfolio in account [acc]. *)
+
+val is_stock_in_portfolio : string -> account -> bool
+(** [is_stock_in_portfolio ticker acc] is true if the stock with ticker symbol
+    [ticker] is in the portfolio of account [acc], and false otherwise. *)
+
+val check_watchlist : account -> unit
+(** [check_watchlist acc] checks the watchlist of account [acc] and prints a
+    message if a stock's current price has fallen below the price at which it
+    was added to the watchlist. *)
+
+val transaction_log_to_string : transaction list -> string
+(** [transaction_log_to_string log] is a string representation of the
+    transaction log [log]. *)
+
+val print_account_details : account -> unit
+(** [print_account_details acc] prints the details of account [acc], including
+    cash balance, stock balance, total balance, portfolio, watchlist,
+    transaction log, and cash transaction log. *)

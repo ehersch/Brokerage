@@ -217,3 +217,134 @@ let watch_to_string list =
   in
   let list_text = to_string list in
   "{ " ^ list_text ^ "}"
+
+let rec find_portfolio_stock ticker (port : (stock * float) list) =
+  match port with
+  | [] -> None
+  | ({ ticker = t; price = _ }, num) :: _ when t = ticker -> Some num
+  | _ :: tl -> find_portfolio_stock ticker tl
+
+let rec update_portfolio_stock ticker num (port : (stock * float) list) =
+  match port with
+  | [] -> []
+  | ({ ticker = t; price = p }, _) :: tl when t = ticker ->
+      ({ ticker = t; price = p }, num) :: tl
+  | head :: tl -> head :: update_portfolio_stock ticker num tl
+
+let buy (shares : float) (ticker : string) (acc : account) =
+  let price = Stocks.get_ticker_price ticker in
+  let cost = price *. shares in
+  if cost > acc.cash_balance then raise Broke
+  else
+    let new_cash_balance = acc.cash_balance -. cost in
+    let stock_in_portfolio = find_portfolio_stock ticker acc.portfolio in
+    let new_portfolio =
+      match stock_in_portfolio with
+      | None -> ({ ticker; price }, shares) :: acc.portfolio
+      | Some num -> update_portfolio_stock ticker (num +. shares) acc.portfolio
+    in
+    {
+      stock_balance = find_stock_balance new_portfolio;
+      cash_balance = new_cash_balance;
+      portfolio = new_portfolio;
+      transaction_log =
+        {
+          time = convert_unix_time (time ());
+          type_of_transaction = "Buy";
+          share = shares;
+          stock = { ticker; price };
+        }
+        :: acc.transaction_log;
+      watchlist = acc.watchlist;
+      dep_with_log = acc.dep_with_log;
+    }
+
+let sell (shares : float) (ticker : string) (acc : account) =
+  let stock_in_portfolio = find_portfolio_stock ticker acc.portfolio in
+  match stock_in_portfolio with
+  | None -> raise StockNotFound
+  | Some num when num < shares -> raise Broke
+  | Some num ->
+      let price = Stocks.get_ticker_price ticker in
+      let new_cash_balance = acc.cash_balance +. (price *. shares) in
+      let new_portfolio =
+        if num = shares then
+          List.filter
+            (fun ({ ticker = t; price = _ }, _) -> t <> ticker)
+            acc.portfolio
+        else update_portfolio_stock ticker (num -. shares) acc.portfolio
+      in
+      {
+        stock_balance = find_stock_balance new_portfolio;
+        cash_balance = new_cash_balance;
+        portfolio = new_portfolio;
+        transaction_log =
+          {
+            time = convert_unix_time (time ());
+            type_of_transaction = "Sell";
+            share = shares;
+            stock = { ticker; price };
+          }
+          :: acc.transaction_log;
+        watchlist = acc.watchlist;
+        dep_with_log = acc.dep_with_log;
+      }
+
+let portfolio_value acc =
+  let rec helper = function
+    | [] -> 0.
+    | ({ ticker = t; price = _ }, num) :: tl ->
+        (num *. Stocks.get_ticker_price t) +. helper tl
+  in
+  helper acc.portfolio
+
+let is_stock_in_portfolio ticker acc =
+  match find_portfolio_stock ticker acc.portfolio with
+  | None -> false
+  | Some _ -> true
+
+let check_watchlist (acc : account) =
+  let rec helper = function
+    | [] -> ()
+    | ({ ticker = t; price = p }, _) :: tl ->
+        let new_price = Stocks.get_ticker_price t in
+        if new_price < p then
+          print_endline
+            ("Stock " ^ t
+           ^ " has fallen below your watch price. Current price: "
+           ^ string_of_float new_price);
+        helper tl
+  in
+  helper acc.watchlist
+
+let transaction_log_to_string (log : transaction list) =
+  let rec to_string = function
+    | [] -> ""
+    | {
+        time = t;
+        type_of_transaction = tt;
+        share = s;
+        stock = { ticker = tick; price = p };
+      }
+      :: tl ->
+        "(" ^ t ^ ", " ^ tt ^ ", " ^ string_of_float s ^ ", (" ^ tick ^ ", "
+        ^ string_of_float p ^ "))\n" ^ to_string tl
+  in
+  let list_text = to_string log in
+  "{ " ^ list_text ^ "}"
+
+let print_account_details (acc : account) =
+  let port_str = port_to_string acc.portfolio in
+  let watch_str = watch_to_string acc.watchlist in
+  let log_str = transaction_log_to_string acc.transaction_log in
+  let cash_str = dep_with_string acc.dep_with_log in
+  print_endline
+    ("Account Details:\n\nCash Balance: "
+    ^ string_of_float acc.cash_balance
+    ^ "\nStock Balance: "
+    ^ string_of_float acc.stock_balance
+    ^ "\nTotal Balance: "
+    ^ string_of_float (balance acc)
+    ^ "\n\nPortfolio:\n" ^ port_str ^ "\nWatchlist:\n" ^ watch_str
+    ^ "\nTransaction Log:\n" ^ log_str ^ "\nCash Transaction Log:\n" ^ cash_str
+    ^ "\n")
