@@ -24,8 +24,8 @@ demo-video-url: ""
 # Write a short, attention-grabbing description of your project.
 desc: >
   Our project is a simulated brokerage where a user can deposit money into their account, access 
-  data on S&P 500 stocks and them to their portfolio. They can buy and sell these stocks,
-  or even do options trading. Clients can log back into their account whenever they want and
-  see how much money they have made.
+  data on S&P 500 stocks and add them to their portfolio. They can buy and sell these stocks,
+  or even view options pricing. Clients can always see a history of transactions and determine
+  how much money theyhave made.
 
   A standard command-line I/O user interface is supported.

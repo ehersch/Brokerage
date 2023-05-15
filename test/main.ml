@@ -21,9 +21,9 @@
 
     Black Box Testing: Used for modules like the Account module where only the
     output mattered, not the internal workings. An example test case was when we
-    tested the 'create account' function by providing input (username and
-    password) and verifying if an account was successfully created, without any
-    concern for how the function internally created the account.
+    tested the 'create account' function by providing input (an amount of money
+    to deposit) and verifying if an account was successfully created, without
+    any concern for how the function internally created the account.
 
     Glass Box Testing: Used for more complex modules like the Log module, where
     internal behaviour mattered. An example test case was when we tested the
@@ -449,17 +449,6 @@ let command_to_string_tests =
     ( "command_to_string with Cashflow" >:: fun _ ->
       assert_equal "Cashflow" (command_to_string Cashflow) );
   ]
-
-(* Generates a fake account with the given cash balance and stock balance *)
-let gen_fake_account cash_balance stock_balance =
-  {
-    cash_balance;
-    stock_balance;
-    portfolio = [];
-    transaction_log = [];
-    watchlist = [];
-    dep_with_log = [];
-  }
 
 (* Generates a fake account with the given cash balance and stock balance *)
 let gen_fake_account cash_balance stock_balance =
