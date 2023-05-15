@@ -50,7 +50,7 @@ let dep_with_string log =
       | h :: t -> (
           match cash_to_string_quad h with
           | a, b, c, d ->
-              "Time: " ^ a ^ "; Type: " ^ b ^ "; Amount: " ^ c
+              "Date: " ^ a ^ "; Type: " ^ b ^ "; Amount: " ^ c
               ^ "; Previous balance: " ^ d ^ " \n " ^ to_string_helper t)
     in
 
@@ -64,7 +64,7 @@ let convert_unix_time (t : float) : string =
   let day = string_of_int tm.tm_mday in
   let month = string_of_int (tm.tm_mon + 1) in
   let year = string_of_int (tm.tm_year + 1900) in
-  day ^ "/" ^ month ^ "/" ^ year
+  month ^ "/" ^ day ^ "/" ^ year
 
 let withdraw (amt : float) (acc : account) =
   let b1 = acc.stock_balance in

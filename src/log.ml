@@ -12,7 +12,7 @@ let to_string my_log =
       | h :: t -> (
           match Account.transaction_to_string_quint h with
           | a, b, c, d, e ->
-              "Time: " ^ a ^ "; Action: " ^ b ^ "; Shares: " ^ c ^ "; Stock: "
+              "Date: " ^ a ^ "; Action: " ^ b ^ "; Shares: " ^ c ^ "; Stock: "
               ^ d ^ "; Price: " ^ e ^ " \n " ^ to_string_helper t)
     in
 

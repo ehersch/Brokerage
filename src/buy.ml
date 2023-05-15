@@ -43,7 +43,7 @@ let convert_unix_time (t : float) : string =
   let day = string_of_int tm.tm_mday in
   let month = string_of_int (tm.tm_mon + 1) in
   let year = string_of_int (tm.tm_year + 1900) in
-  day ^ "/" ^ month ^ "/" ^ year
+  month ^ "/" ^ day ^ "/" ^ year
 
 let buy shares ticker acc =
   try
