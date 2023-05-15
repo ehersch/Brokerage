@@ -7,7 +7,7 @@
 
 Install opam dependencies (should take a few minutes):
 ```
-opam install ppx_deriving tls-lwt cohttp cohttp-async cohttp-lwt cohttp-lwt-unix cohttp-lwt-jsoo cohttp-top lwt_ppx
+opam install ppx_deriving tls-lwt cohttp cohttp-async cohttp-lwt cohttp-lwt-unix cohttp-lwt-jsoo cohttp-top lwt_ppx yojson ounit2 ANSITerminal calendar
 ```
 
 ## To use operate and try out the UI of our brokerage
@@ -38,7 +38,7 @@ You can deposit integer and float values. For example, "-deposit 1000" and "-dep
 You can buy whole stocks and fractional stocks. For example, "-buy aapl 1" and "-buy .5" both work.
 
 
-## Information about some less-obvious commands
+## Information about some commands
 
 "-bal" is your cash and stock balance combined
 
