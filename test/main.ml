@@ -3,6 +3,7 @@ open Stocks
 open Account
 open Command
 open OUnit2
+open Log
 
 let command_to_string (cmd : command) : string =
   match cmd with
@@ -141,6 +142,20 @@ let parse_tests =
     parse_test "Testing a command with negative number for sell"
       "-sell AAPL -5.0"
       (Sell ("AAPL", -5.0));
+    parse_test "Testing a valid Buy command without decimal point"
+      "-buy AAPL 10"
+      (Buy ("AAPL", 10.0));
+    parse_test "Testing a valid Sell command without decimal point"
+      "-sell AAPL 5"
+      (Sell ("AAPL", 5.0));
+    parse_test "Testing a valid View command with lower case ticker"
+      "-view aapl" (View "aapl");
+    parse_test "Testing a valid ViewOption command with lower case ticker"
+      "-view_option aapl" (ViewOption "aapl");
+    parse_test "Testing a valid WatchlistAdd command with lower case ticker"
+      "-watchlist add aapl" (WatchlistAdd "aapl");
+    parse_test "Testing a valid WatchlistRemove command with lower case ticker"
+      "-watchlist remove aapl" (WatchlistRemove "aapl");
   ]
 
 let stock1 = { ticker = "GOOG"; price = 1000.0 }
@@ -189,7 +204,7 @@ let account_test2 =
     dep_with_log = [ dep_with1 ];
   }
 
-let account_tests2 =
+let account_tests =
   [
     ( "test withdrawal" >:: fun _ ->
       let acc = withdraw 500.0 account_test2 in
@@ -223,7 +238,131 @@ let account_tests2 =
         (ret_portfolio account_test2.portfolio) );
   ]
 
+(* More account tests *)
+let deposit_test (name : string) (amt : float) (acc : account)
+    (expected_output : account) : test =
+  name >:: fun _ ->
+  assert_equal ~printer:string_of_float expected_output.cash_balance
+    (deposit amt acc).cash_balance
+
+let withdraw_test (name : string) (amt : float) (acc : account)
+    (expected_output : account) : test =
+  name >:: fun _ ->
+  assert_equal ~printer:string_of_float expected_output.cash_balance
+    (withdraw amt acc).cash_balance
+
+let withdraw_fail_test (name : string) (amt : float) (acc : account) : test =
+  name >:: fun _ -> assert_raises Broke (fun () -> withdraw amt acc)
+
+let add_watchlist_test (name : string) (ticker : string) (acc : account)
+    (expected_output : account) : test =
+  name >:: fun _ ->
+  assert_equal ~printer:string_of_int
+    (List.length expected_output.watchlist)
+    (List.length (add_watchlist ticker acc).watchlist)
+
+let remove_watchlist_test (name : string) (ticker : string) (acc : account)
+    (expected_output : account) : test =
+  name >:: fun _ ->
+  assert_equal ~printer:string_of_int
+    (List.length expected_output.watchlist)
+    (List.length (remove_watchlist ticker acc).watchlist)
+
+let remove_watchlist_fail_test (name : string) (ticker : string) (acc : account)
+    : test =
+  name >:: fun _ ->
+  assert_raises StockNotFound (fun () -> remove_watchlist ticker acc)
+
+let create_account =
+  {
+    stock_balance = 0.;
+    cash_balance = 0.;
+    portfolio = [];
+    transaction_log = [];
+    watchlist = [];
+    dep_with_log = [];
+  }
+
+let account_tests_live_data =
+  [
+    deposit_test "Deposit 500 to an empty account" 500.0 create_account
+      {
+        create_account with
+        cash_balance = 500.0;
+        dep_with_log =
+          [
+            {
+              ctime = "1621027200";
+              type_of = "Deposit";
+              amount = 500.0;
+              prev_balance = 0.0;
+            };
+          ];
+      };
+    withdraw_test "Withdraw 250 from an account with 500" 250.0
+      {
+        create_account with
+        cash_balance = 500.0;
+        dep_with_log =
+          [
+            {
+              ctime = "1621027200";
+              type_of = "Deposit";
+              amount = 500.0;
+              prev_balance = 0.0;
+            };
+          ];
+      }
+      {
+        create_account with
+        cash_balance = 250.0;
+        dep_with_log =
+          [
+            {
+              ctime = "1621027200";
+              type_of = "Withdrawal";
+              amount = 250.0;
+              prev_balance = 500.0;
+            };
+            {
+              ctime = "1621027200";
+              type_of = "Deposit";
+              amount = 500.0;
+              prev_balance = 0.0;
+            };
+          ];
+      };
+    withdraw_fail_test "Attempt to withdraw 750 from an account with 500" 750.0
+      {
+        create_account with
+        cash_balance = 500.0;
+        dep_with_log =
+          [
+            {
+              ctime = "1621027200";
+              type_of = "Deposit";
+              amount = 500.0;
+              prev_balance = 0.0;
+            };
+          ];
+      };
+    add_watchlist_test "Add AAPL to watchlist" "AAPL" create_account
+      {
+        create_account with
+        watchlist = [ ({ ticker = "AAPL"; price = 10.0 }, 10.0) ];
+      };
+    remove_watchlist_test "Remove AAPL from watchlist" "AAPL"
+      {
+        create_account with
+        watchlist = [ ({ ticker = "AAPL"; price = 10.0 }, 10.0) ];
+      }
+      create_account;
+    remove_watchlist_fail_test
+      "Attempt to remove non-existing ticker from watchlist" "AAPL"
+      create_account;
+  ]
+
 let suite =
-  "test suite for Jame Street" >::: List.flatten [ parse_tests; account_tests2 ]
+  "test suite for Jame Street" >::: List.flatten [ parse_tests; account_tests ]
 
 let _ = run_test_tt_main suite
