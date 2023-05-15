@@ -275,7 +275,7 @@ let rec prompt_command (curr_acc : account) =
         prompt_command curr_acc
     | Cash ->
         ANSITerminal.print_string [ ANSITerminal.cyan ]
-          ("Your current balance (cash and stock worth combined) is: "
+          ("Your current cash balance is: "
           ^ string_of_float (Account.cash_balance curr_acc)
           ^ "\n");
         prompt_command curr_acc
@@ -403,76 +403,22 @@ let new_user () =
      brokerage feature commands";
   prompt_command fresh_acc_example_preloaded_stocks
 
+let read_file filename =
+  let ic = open_in filename in
+  let rec loop acc =
+    try
+      let line = input_line ic in
+      loop (line :: acc)
+    with End_of_file ->
+      close_in ic;
+      List.rev acc
+  in
+  loop []
+
 let rec terms () =
-  print_string
-    "TERMS AND CONDITIONS AGREEMENT\n\
-    \    \n\
-    \    Welcome to Jame Street. By using our brokerage services, you agree to \
-     be\n\
-    \    bound by the following terms and conditions which govern your access \
-     to and\n\
-    \    use of our brokerage services, including any information, tools, \
-     features, \n\
-    \    or any other content offered through our platform.\n\
-    \    \n\
-    \    1. Eligibility\n\
-    \    \n\
-    \    You must be atleast 18 years old and have the legal capacity to enter \
-     into\n\
-    \    a binding agreement in order to use our services. By using our \
-     services, you\n\
-    \    represent and warrant that you meet these eligibility requirements\n\
-    \    \n\
-    \    2. Investment Advice\n\
-    \    \n\
-    \    We are not a registered investment adviser and do not provide \
-     investment \n\
-    \    advice. The information provided through our services is for \
-     informational\n\
-    \    purposes only and does not constitute investment advice or a \
-     recommendation\n\
-    \    to buy, sell, or hold any securities or other financial products\n\
-    \    \n\
-    \    3. Trading Risks\n\
-    \    \n\
-    \    You acknowledge and agree that trading securitires involves risks, \
-     including\n\
-    \    the risk of loss of principal. You are solely responsible for any \
-     investment\n\
-    \    decisions you make and for understanding the risks involved. \n\
-    \    \n\
-    \    4. Intellectual Property\n\
-    \    \n\
-    \    All content included in or made available through our services, \
-     including\n\
-    \    text, graphics, and software is the propety of Jame Street or its \
-     licensors\n\
-    \    and is protected by United States and international copyright laws\n\
-    \    \n\
-    \    5. Limitation of Liability\n\
-    \    \n\
-    \    You agree that we will not be liable for any direct, indirect, \
-     incidental, \n\
-    \    special, consequential, or exemplary damages arising out of or in \
-     connection\n\
-    \    with your use of our services, including any loss of profits, \
-     goodwill, use,\n\
-    \    or data.\n\
-    \    \n\
-    \    6. Termination\n\
-    \    \n\
-    \    We reserve the right to terminate your access to our services at any \
-     time\n\
-    \    and for any reason, without liability to you. \n\n\
-    \    7. Modification of Terms and Conditions\n\n\
-    \    We reserve the right to modify these terms and conditions at any time, \n\
-    \    without notice to you. Your continued use of our services following \
-     any such\n\
-    \    modificaations constitutes your acceptance of the modified terms and\n\
-    \    conditions. \n\n\
-    \    By usng our services you acknowledge that you have read and \
-     understand these\n\
-    \    terms and conditions and agree to be bound by them.\n";
+  let terms_and_conditions = read_file "ui/terms.txt" in
+  List.iter (fun line -> print_endline line) terms_and_conditions;
+
   ANSITerminal.print_string [ ANSITerminal.red ]
     "Do you agree to these terms and conditions? Please enter 'yes' or 'no' ";
   print_string "> ";
@@ -480,7 +426,7 @@ let rec terms () =
   | "yes" -> new_user ()
   | "no" ->
       print_string
-        "You must agree to the terms and conditions to begin trading.\n"
+        "You must agree to the terms and conditions to trade with Jame Street.\n"
   | _ ->
       print_string "Please enter a valid command.";
       print_string "> ";
