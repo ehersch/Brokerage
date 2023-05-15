@@ -27,4 +27,5 @@ opendoc: doc
 	@bash opendoc.sh
 
 zip:
+	rm -f brokerage.zip
 	zip -r brokerage.zip .
