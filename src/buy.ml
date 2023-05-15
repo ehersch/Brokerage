@@ -37,7 +37,8 @@ let order lst =
   in
   combine_entries [] sorted_lst
 
-(** Converts the time into an easy-to-read month/day/year string format*)
+(** Private helper funtion. Converts the time into an easy-to-read
+    month/day/year string format*)
 let convert_unix_time (t : float) : string =
   let tm = localtime t in
   let day = string_of_int tm.tm_mday in

@@ -4,9 +4,10 @@ open Yojson.Basic.Util
 
 exception NoSuchStock of string
 
+(** Private URL for APi.*)
 let base_url = "https://api.polygon.io"
 
-(** Personal key for our team. Max calls per min = 5*)
+(** Private, personal key for our team. Max calls per min = 5*)
 let api_key = "jn_NAmtAD16hk6azpunzVK1TEvKiu5vy"
 
 let get_ticker_price ticker =

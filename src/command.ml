@@ -21,20 +21,16 @@ type command =
 exception Invalid
 exception Empty
 
+(** Private helper function to see if a string is a float. *)
 let is_float s =
   try
     ignore (float_of_string s);
     true
   with Failure _ -> false
 
+(** Private helper function to see if a string is not empty. *)
 let is_not_empty_string s = String.length s > 0
 
-(** [parse str] parses a user's input into a [command]. The first word that is
-    not an empty string becomes the command type listed in -help and the rest of
-    the words if any become the phrase. Raises [Invalid] when input is not in
-      the format of -command [number if required]. Example:
-    - parse " -dep 500." is [Dep 500.0]]
-    - parse "-bal" is [Bal] *)
 let parse str =
   let split_str =
     List.filter is_not_empty_string

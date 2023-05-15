@@ -58,13 +58,28 @@ let dep_with_string log =
 
     "[" ^ String.sub cur_str 0 (String.length cur_str - 3) ^ "]"
 
-(** Converts the time into an easy-to-read month/day/year string format*)
+(** Private helper function. Converts the time into an easy-to-read
+    month/day/year string format*)
 let convert_unix_time (t : float) : string =
   let tm = localtime t in
   let day = string_of_int tm.tm_mday in
   let month = string_of_int (tm.tm_mon + 1) in
   let year = string_of_int (tm.tm_year + 1900) in
   month ^ "/" ^ day ^ "/" ^ year
+
+let stock_to_string_pair stk = (stk.ticker, string_of_float stk.price)
+
+let transaction_to_string_quint trans =
+  let pp = stock_to_string_pair trans.stock in
+  match pp with
+  | a, b ->
+      let tick = a in
+      let pr = b in
+      ( trans.time,
+        trans.type_of_transaction,
+        string_of_float trans.share,
+        tick,
+        pr )
 
 let withdraw (amt : float) (acc : account) =
   let b1 = acc.stock_balance in
@@ -112,33 +127,17 @@ let deposit (amt : float) (acc : account) =
        dw1 :: acc.dep_with_log);
   }
 
-let stock_to_string_pair stk = (stk.ticker, string_of_float stk.price)
-
-let transaction_to_string_quint trans =
-  let pp = stock_to_string_pair trans.stock in
-  match pp with
-  | a, b ->
-      let tick = a in
-      let pr = b in
-      ( trans.time,
-        trans.type_of_transaction,
-        string_of_float trans.share,
-        tick,
-        pr )
-
-(** Calculates the current value of the portfolio [port]. *)
+(** Private helper function. Calculates the current value of the portfolio
+    [port]. *)
 let rec find_stock_balance port =
   match port with
   | [] -> 0.
   | (stk, num) :: t ->
       (Stocks.get_ticker_price stk.ticker *. num) +. find_stock_balance t
 
-let stock_balance acc = find_stock_balance acc.portfolio
 let balance acc = acc.stock_balance +. acc.cash_balance
+let stock_balance acc = find_stock_balance acc.portfolio
 let cash_balance acc = acc.cash_balance
-
-let only_stocks (acc : account) =
-  List.map (fun ({ ticker; price }, _) -> ticker) acc.portfolio
 
 let rec ret_portfolio (port : (stock * float) list) =
   match port with
@@ -156,6 +155,9 @@ let port_to_string port =
   in
   let list_text = to_string full_port in
   "{ " ^ list_text ^ "}"
+
+let only_stocks (acc : account) =
+  List.map (fun ({ ticker; price }, _) -> ticker) acc.portfolio
 
 let add_watchlist ticker acc =
   try

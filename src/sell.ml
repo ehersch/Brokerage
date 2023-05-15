@@ -40,13 +40,14 @@ let order lst =
   in
   combine_entries [] sorted_lst
 
-(** [contains_ticker lst s] checks if s is in lst*)
+(** Private helper function. [contains_ticker lst s] checks if s is in lst*)
 let rec contains_ticker lst s =
   match lst with
   | [] -> false
   | h :: tl -> if h = s then true else contains_ticker tl s
 
-(** Converts the time into an easy-to-read month/day/year string format*)
+(** Private helper function. Converts the time into an easy-to-read
+    month/day/year string format *)
 let convert_unix_time (t : float) : string =
   let tm = localtime t in
   let day = string_of_int tm.tm_mday in
@@ -54,7 +55,8 @@ let convert_unix_time (t : float) : string =
   let year = string_of_int (tm.tm_year + 1900) in
   month ^ "/" ^ day ^ "/" ^ year
 
-(** Finds the original price of [stock] in portfolio [port]*)
+(** Private helper function. Finds the original price of [stock] in portfolio
+    [port]*)
 let rec orig_price stock port =
   match port with
   | [] -> raise (NotOwned stock)

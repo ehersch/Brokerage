@@ -5,7 +5,9 @@ open CalendarLib
 
 exception NoSuchOption of string
 
+(** Private URL.*)
 let base_url = "https://api.polygon.io"
+ (** Private API key.*)
 let api_key = "jn_NAmtAD16hk6azpunzVK1TEvKiu5vy"
 
 let get_option_contract ticker =
@@ -31,6 +33,7 @@ let get_option_contract ticker =
     (symbol, expiration_date, strike_price)
   with exc -> raise (NoSuchOption ticker)
 
+(** Private helper function to make some greeks calculations. *)
 let erf x =
   let a = 0.147 in
   let x_sq = x *. x in
@@ -39,6 +42,7 @@ let erf x =
   let erf = x *. exp (-.x_sq *. y) /. (1. +. (x_sq *. y)) in
   erf
 
+(** Private helper function to calculate cdf. *)
 let norm_cdf x =
   let sign = if x < 0.0 then -1.0 else 1.0 in
   let y = 1.0 +. erf (sign *. x /. sqrt 2.0) in
