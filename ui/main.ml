@@ -86,11 +86,9 @@ let rec prompt_command (curr_acc : account) =
                 ^ string_of_float (snd new_acc))
             else if snd new_acc < 0. then
               print_endline
-                ("\n\
-                 \ Your loss profit (or negative if you sold for a loss) from \
-                  the sale: "
+                ("\n Your loss from the sale: "
                 ^ string_of_float (0. -. snd new_acc))
-            else if snd new_acc = 0. then print_endline "\n Your broke even.";
+            else if snd new_acc = 0. then print_endline "\n You broke even.";
             prompt_command (fst new_acc)
           with
           | Broke ->
