@@ -78,4 +78,4 @@ You can buy whole stocks and fractional stocks. For example, "-buy aapl 1" and "
 "-quit" exit
 
 
-**Final project for CS3110 Spring 2023**
+**Final project for CS 3110 Spring 2023**
